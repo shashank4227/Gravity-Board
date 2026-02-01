@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
 
         await user.save();
 
-        constpayload = {
+        const payload = {
             user: {
                 id: user.id
             }
