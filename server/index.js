@@ -22,9 +22,11 @@ app.get('/', (req, res) => {
 
 const tasksRouter = require('./routes/tasks');
 const focusRouter = require('./routes/focus');
+const authRouter = require('./routes/auth');
 
 app.use('/api/tasks', tasksRouter);
 app.use('/api/focus', focusRouter);
+app.use('/api/auth', authRouter);
 
 // Import Helper for Gravity Calculation (Placeholder)
 const calculateGravity = (task) => {
