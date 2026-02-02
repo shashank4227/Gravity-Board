@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Zap, Calendar, MapPin, AlignLeft, RefreshCw, Folder } from 'lucide-react';
+import { Plus, X, Zap, Calendar, MapPin, AlignLeft, RefreshCw, Folder, Mail, Bell, AlertCircle } from 'lucide-react';
 import { createTask } from '../utils/api';
 import classNames from 'classnames';
 
 const CreateTaskForm = ({ onTaskCreated }) => {
-    const { isCreateTaskOpen, closeCreateTask, createTaskSection, onTaskCreated: onGlobalTaskCreated } = useTaskContext();
+    const { isCreateTaskOpen, closeCreateTask, createTaskSection, onTaskCreated: onGlobalTaskCreated, refreshTasks } = useTaskContext();
     const [isLoading, setIsLoading] = useState(false);
     
     // Form State
@@ -17,6 +17,11 @@ const CreateTaskForm = ({ onTaskCreated }) => {
     const [contextTags, setContextTags] = useState('');
     const [recurrence, setRecurrence] = useState('none');
     const [section, setSection] = useState('');
+    
+    // New Fields
+    const [type, setType] = useState('general');
+    const [priority, setPriority] = useState('medium');
+    const [emailRecipient, setEmailRecipient] = useState(''); // Specific action payload state
 
     useEffect(() => {
         if (isCreateTaskOpen) {
@@ -33,6 +38,11 @@ const CreateTaskForm = ({ onTaskCreated }) => {
             // Process tags
             const tags = contextTags.split(',').map(tag => tag.trim()).filter(tag => tag);
             
+            const payload = {};
+            if (type === 'email') {
+                payload.recipient = emailRecipient;
+            }
+
             await createTask({
                 title,
                 description,
@@ -40,7 +50,10 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 deadline,
                 contextTags: tags,
                 recurrence: { frequency: recurrence },
-                section: section || 'General'
+                section: section || 'General',
+                type,
+                priority,
+                actionPayload: payload
             });
 
             // Reset and close
@@ -51,7 +64,12 @@ const CreateTaskForm = ({ onTaskCreated }) => {
             setContextTags('');
             setRecurrence('none');
             setSection('');
+            setType('general');
+            setPriority('medium');
+            setEmailRecipient('');
+            
             closeCreateTask();
+            refreshTasks();
             
             if (onTaskCreated) onTaskCreated();
         } catch (error) {
@@ -68,6 +86,13 @@ const CreateTaskForm = ({ onTaskCreated }) => {
         { value: 'high', label: 'High', color: 'bg-status-error/10 text-status-error border-status-error/20' }
     ];
 
+    const typeOptions = [
+        { value: 'general', label: 'General', icon: <AlignLeft size={16} /> },
+        { value: 'email', label: 'Email', icon: <Mail size={16} /> },
+        { value: 'reminder', label: 'Reminder', icon: <Bell size={16} /> },
+        { value: 'calendar', label: 'Calendar', icon: <Calendar size={16} /> } // Reusing Calendar icon
+    ];
+
     if (!isCreateTaskOpen) return null;
 
     return (
@@ -77,10 +102,10 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-surface p-6 rounded-3xl shadow-2xl border border-white/10 overflow-hidden w-full max-w-2xl"
+                className="bg-surface p-6 rounded-3xl shadow-2xl border border-white/10 overflow-hidden w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-t-primary tracking-tight">New Protocol</h2>
+                    <h2 className="text-xl font-bold text-t-primary tracking-tight">New Action Item</h2>
                     <button 
                         onClick={closeCreateTask}
                         className="p-2 hover:bg-elevated rounded-full text-t-disabled hover:text-t-primary transition-colors"
@@ -94,7 +119,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                         <div>
                             <input
                                 type="text"
-                                placeholder="What is the objective?"
+                                placeholder="What needs to be accomplished?"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="w-full text-xl font-medium placeholder-t-disabled bg-transparent border-none focus:ring-0 p-0 m-0 text-t-primary"
@@ -102,31 +127,84 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                             />
                         </div>
 
-                        {/* Energy Level Selection */}
-                        <div>
-                            <label className="text-[10px] font-bold text-t-disabled uppercase tracking-widest mb-3 block flex items-center gap-1.5">
-                                <Zap size={10} /> Energy Required
-                            </label>
-                            <div className="flex gap-3">
-                                {energyOptions.map((opt) => (
-                                    <button
-                                        key={opt.value}
-                                        type="button"
-                                        onClick={() => setEnergyLevel(opt.value)}
-                                        className={classNames(
-                                            "px-4 py-2 rounded-xl text-xs font-semibold border transition-all flex-1",
-                                            energyLevel === opt.value 
-                                                ? opt.color 
-                                                : "bg-elevated text-t-disabled border-transparent hover:bg-white/10 hover:text-t-secondary"
-                                        )}
-                                    >
-                                        {opt.label}
-                                    </button>
-                                ))}
+                        {/* Type & Priority Row */}
+                        <div className="flex gap-4">
+                            {/* Type Selection */}
+                             <div className="flex-1">
+                                <label className="text-[10px] font-bold text-t-disabled uppercase tracking-widest mb-3 block flex items-center gap-1.5">
+                                    <Zap size={10} /> Type
+                                </label>
+                                <div className="flex bg-elevated rounded-xl p-1 gap-1">
+                                    {typeOptions.map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            onClick={() => setType(opt.value)}
+                                            className={classNames(
+                                                "flex-1 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all",
+                                                type === opt.value
+                                                    ? "bg-neon/20 text-neon-cyan shadow-sm"
+                                                    : "text-t-disabled hover:text-t-primary"
+                                            )}
+                                            title={opt.label}
+                                        >
+                                            {opt.icon}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                             {/* Priority Selection */}
+                             <div className="flex-1">
+                                <label className="text-[10px] font-bold text-t-disabled uppercase tracking-widest mb-3 block flex items-center gap-1.5">
+                                    <AlertCircle size={10} /> Priority
+                                </label>
+                                <div className="flex bg-elevated rounded-xl p-1 gap-1">
+                                    {['low', 'medium', 'high'].map((p) => (
+                                        <button
+                                            key={p}
+                                            type="button"
+                                            onClick={() => setPriority(p)}
+                                            className={classNames(
+                                                "flex-1 py-1.5 rounded-lg text-xs font-semibold uppercase transition-all",
+                                                priority === p
+                                                    ? p === 'high' ? 'bg-status-error/20 text-status-error' : p === 'medium' ? 'bg-status-warning/20 text-status-warning' : 'bg-emerald-500/20 text-emerald-400'
+                                                    : "text-t-disabled hover:text-t-primary"
+                                            )}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Details Grid */}
+                        {/* Conditional Email Fields */}
+                        <AnimatePresence>
+                            {type === 'email' && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="bg-elevated p-3 rounded-xl border border-white/5 mb-4">
+                                        <label className="text-[10px] font-bold text-t-disabled uppercase tracking-widest mb-1 block flex items-center gap-1.5">
+                                            <Mail size={10} /> Recipient
+                                        </label>
+                                        <input
+                                            type="email"
+                                            placeholder="recipient@example.com"
+                                            value={emailRecipient}
+                                            onChange={(e) => setEmailRecipient(e.target.value)}
+                                            className="w-full bg-transparent border-none text-sm focus:ring-0 p-0 text-t-primary placeholder-t-disabled"
+                                        />
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Existing Details Grid (Deadline, Recurrence, Section, Context) */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Deadline */}
                             <div className="bg-elevated p-3 rounded-xl border border-white/5">
@@ -149,7 +227,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                                 <select
                                     value={recurrence}
                                     onChange={(e) => setRecurrence(e.target.value)}
-                                    className="w-full bg-transparent border-none text-sm focus:ring-0 p-0 text-t-primary"
+                                    className="w-full bg-transparent border-none text-sm focus:ring-0 p-0 text-t-primary bg-elevated"
                                 >
                                     <option value="none" className="bg-surface">Single Instance</option>
                                     <option value="daily" className="bg-surface">Daily Cycle</option>
@@ -208,7 +286,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                                 disabled={isLoading || !title}
                                 className="bg-neon text-white px-8 py-3 rounded-xl font-bold tracking-wide hover:bg-neon-glow transition-all shadow-lg shadow-neon/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:scale-105 active:scale-95"
                             >
-                                {isLoading ? 'Aligning...' : 'Initiate'}
+                                {isLoading ? 'Aligning...' : 'Initiate Action'}
                                 {!isLoading && <Plus size={18} strokeWidth={3} />}
                             </button>
                         </div>

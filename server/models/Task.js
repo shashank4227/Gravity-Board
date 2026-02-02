@@ -46,6 +46,22 @@ const TaskSchema = new mongoose.Schema({
         default: 'floating'
     },
     
+    // Action Item Specifics
+    type: {
+        type: String,
+        enum: ['general', 'email', 'reminder', 'calendar'],
+        default: 'general'
+    },
+    priority: {
+        type: String,
+        enum: ['low', 'medium', 'high'],
+        default: 'medium'
+    },
+    actionPayload: {
+        type: mongoose.Schema.Types.Mixed, // Flexible storage for email details, etc.
+        default: {}
+    },
+
     // Recurrence & Organization
     recurrence: {
         frequency: {
@@ -67,6 +83,9 @@ const TaskSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    completedAt: {
+        type: Date
     }
 });
 

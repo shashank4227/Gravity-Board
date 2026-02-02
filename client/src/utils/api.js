@@ -33,10 +33,41 @@ export const createTask = async (taskData) => {
 
 export const updateTask = async (id, data) => {
     try {
-        const response = await axios.patch(`${API_URL}/tasks/${id}/interactions`, data);
+        // Keeping this for backward compatibility if needed, or just redirecting to patch
+        const response = await axios.patch(`${API_URL}/tasks/${id}`, data);
         return response.data;
     } catch (error) {
         console.error("Error updating task:", error);
+        throw error;
+    }
+};
+
+export const patchTask = async (id, data) => {
+    try {
+        const response = await axios.patch(`${API_URL}/tasks/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error patching task:", error);
+        throw error;
+    }
+};
+
+export const deleteTask = async (id) => {
+    try {
+        const response = await axios.delete(`${API_URL}/tasks/${id}`);
+        return response.data;
+    } catch (error) {
+         console.error("Error deleting task:", error);
+         throw error;
+    }
+}
+
+export const executeTask = async (id) => {
+    try {
+        const response = await axios.post(`${API_URL}/tasks/${id}/execute`);
+        return response.data;
+    } catch (error) {
+        console.error("Error executing task:", error);
         throw error;
     }
 };

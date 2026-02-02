@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Zap, MapPin, RefreshCw, Folder } from 'lucide-react';
+import { Clock, Zap, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft } from 'lucide-react';
 import classNames from 'classnames';
+import { executeTask, deleteTask } from '../utils/api';
+import { useTaskContext } from '../context/TaskContext'; // Assuming context might be needed for refresh
 
 const TaskCard = ({ task, innerRef, provided, style }) => {
-  const { title, gravityScore, energyLevel, deadline, contextTags } = task;
+  const { title, gravityScore, energyLevel, deadline, contextTags, type, priority, status } = task;
+  const [isExecuting, setIsExecuting] = useState(false);
+  const { refreshTasks } = useTaskContext(); // Assuming this exists or similar
 
   const energyColors = {
     low: 'bg-emerald-900/20 text-emerald-400 border border-emerald-500/20',
@@ -12,7 +16,33 @@ const TaskCard = ({ task, innerRef, provided, style }) => {
     high: 'bg-status-error/10 text-status-error border border-status-error/20',
   };
 
+  const priorityColors = {
+      low: 'text-emerald-400',
+      medium: 'text-status-warning',
+      high: 'text-status-error'
+  };
+
   const formattedDeadline = deadline ? new Date(deadline).toLocaleDateString() : null;
+
+  const handleOpenMail = (e) => {
+      e.stopPropagation();
+      const { recipient, subject, body } = task.actionPayload || {};
+      if (recipient) {
+          const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(description || '')}`;
+          window.open(mailtoLink, '_blank');
+      } else {
+          alert("No recipient specified.");
+      }
+  };
+
+  const getTypeIcon = () => {
+      switch(type) {
+          case 'email': return <Mail size={14} />;
+          case 'reminder': return <Bell size={14} />;
+          case 'calendar': return <Calendar size={14} />;
+          default: return <AlignLeft size={14} />;
+      }
+  };
 
   return (
     <motion.div
@@ -36,13 +66,24 @@ const TaskCard = ({ task, innerRef, provided, style }) => {
         />
 
       <div className="flex justify-between items-start mb-3 pl-3">
-        <h3 className="font-bold text-t-primary text-lg tracking-tight">{title}</h3>
-        <span className="text-xs font-mono font-bold text-neon-glow bg-elevated border border-white/10 px-2 py-1 rounded">
-          {gravityScore.toFixed(1)} G
-        </span>
+        <div className="flex items-start gap-2">
+            <span className="mt-1 text-t-disabled">{getTypeIcon()}</span>
+            <h3 className="font-bold text-t-primary text-lg tracking-tight leading-tight">{title}</h3>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+            <span className="text-xs font-mono font-bold text-neon-glow bg-elevated border border-white/10 px-2 py-1 rounded">
+            {gravityScore.toFixed(1)} G
+            </span>
+             {priority && priority !== 'medium' && (
+                 <span className={classNames("text-[10px] font-bold uppercase tracking-wider", priorityColors[priority])}>
+                     {priority}
+                 </span>
+             )}
+        </div>
+        
       </div>
 
-      <div className="flex gap-2 mb-4 pl-3">
+      <div className="flex gap-2 mb-4 pl-3 flex-wrap">
         <span className={classNames("text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-semibold flex items-center gap-1.5", energyColors[energyLevel])}>
           <Zap size={10} strokeWidth={3} /> {energyLevel}
         </span>
@@ -58,7 +99,7 @@ const TaskCard = ({ task, innerRef, provided, style }) => {
         )}
       </div>
       
-      <div className="flex items-center justify-between pl-3 relative">
+      <div className="flex items-center justify-between pl-3 relative min-h-[24px]">
           {/* Section Badge */}
           <div className="flex items-center">
             <span className="text-[10px] font-bold text-t-disabled uppercase tracking-widest flex items-center gap-1">
@@ -66,12 +107,25 @@ const TaskCard = ({ task, innerRef, provided, style }) => {
             </span>
           </div>
 
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bottom-0">
-              <button 
-                onClick={(e) => { e.stopPropagation(); task.onFocus(task); }} 
-                className="text-xs bg-neon text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-neon-glow transition-colors shadow-lg shadow-neon/30 font-medium"
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bottom-0 flex gap-2">
+              {type === 'email' && (
+                  <button 
+                    onClick={handleOpenMail}
+                    className="text-xs bg-neon text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-neon-glow transition-colors shadow-lg shadow-neon/30 font-medium"
+                  >
+                     <Mail size={12} fill="currentColor" /> Open Mail
+                  </button>
+              )}
+               <button 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if(window.confirm("Delete this action item?")) {
+                        deleteTask(task._id).then(() => window.location.reload());
+                    }
+                }}
+                className="text-xs bg-status-error/10 text-status-error px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-status-error/20 transition-colors border border-status-error/20"
               >
-                  <Zap size={12} fill="currentColor" /> Focus
+                  <Trash2 size={12} />
               </button>
           </div>
       </div>

@@ -8,53 +8,55 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Plus, Share2, MessageSquare, SlidersHorizontal, UserPlus, ChevronRight } from 'lucide-react';
 
 const GravityBoard = () => {
-    const { openCreateTask, activeView } = useTaskContext();
-    const [tasks, setTasks] = useState([]);
-    const [refreshKey, setRefreshKey] = useState(0);
+    const { openCreateTask, activeView, tasks, refreshTasks } = useTaskContext();
     const [activeFocusSession, setActiveFocusSession] = useState(null);
     const [groupedTasks, setGroupedTasks] = useState({});
 
+    // Filter States
+    const [filterType, setFilterType] = useState('all');
+    const [filterPriority, setFilterPriority] = useState('all');
+
     // Grouping Logic
     useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                let data = await getTasks();
-                setTasks(data); // Raw data
+        let data = [...tasks]; // Use tasks from context
 
-                // Filter based on activeView
-                if (activeView === 'inbox') {
-                    data = data.filter(t => !t.section || t.section === 'Inbox');
-                } else if (activeView === 'today') {
-                    const today = new Date().toISOString().split('T')[0];
-                    data = data.filter(t => t.deadline && t.deadline.startsWith(today));
-                } else if (activeView === 'upcoming') {
-                    const today = new Date().toISOString().split('T')[0];
-                    data = data.filter(t => t.deadline && t.deadline > today);
-                }
-                // 'project' view shows all (or default)
-                
-                // Group by Section
-                const groups = data.reduce((acc, task) => {
-                    const section = task.section || 'Inbox';
-                    if (!acc[section]) acc[section] = [];
-                    acc[section].push(task);
-                    return acc;
-                }, {});
+        // Filter based on activeView
+        if (activeView === 'inbox') {
+            data = data.filter(t => !t.section || t.section === 'Inbox');
+        } else if (activeView === 'today') {
+            const today = new Date().toISOString().split('T')[0];
+            data = data.filter(t => t.deadline && t.deadline.startsWith(today));
+        } else if (activeView === 'upcoming') {
+            const today = new Date().toISOString().split('T')[0];
+            data = data.filter(t => t.deadline && t.deadline > today);
+        }
+        // 'project' view shows all (or default)
 
-                // Ensure default columns exist if you want fixed structure
-                if (!groups['Planning']) groups['Planning'] = [];
-                if (!groups['In Progress']) groups['In Progress'] = [];
-                
-                setGroupedTasks(groups);
-            } catch (err) {
-                console.error("Failed to load tasks", err);
-            }
-        };
-        fetchTasks();
-    }, [refreshKey, activeView]);
+        // Apply Custom Filters
+        if (filterType !== 'all') {
+            data = data.filter(t => t.type === filterType);
+        }
+        if (filterPriority !== 'all') {
+            data = data.filter(t => t.priority === filterPriority);
+        }
+        
+        // Group by Section
+        const groups = data.reduce((acc, task) => {
+            const section = task.section || 'Inbox';
+            if (!acc[section]) acc[section] = [];
+            acc[section].push(task);
+            return acc;
+        }, {});
+
+        // Ensure default columns exist if you want fixed structure
+        if (!groups['Planning']) groups['Planning'] = [];
+        if (!groups['In Progress']) groups['In Progress'] = [];
+        
+        setGroupedTasks(groups);
+    }, [tasks, activeView, filterType, filterPriority]);
 
     const handleTaskCreated = () => {
-        setRefreshKey(prev => prev + 1);
+        refreshTasks();
     };
 
     const handleEnterFocus = async (task) => {
@@ -95,6 +97,33 @@ const GravityBoard = () => {
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <h1 className="text-3xl font-bold text-t-primary tracking-wide leading-tight">GravityBoard</h1>
+                        
+                        {/* Filters */}
+                        <div className="flex items-center gap-2 ml-8">
+                             <select 
+                                value={filterType} 
+                                onChange={(e) => setFilterType(e.target.value)}
+                                className="bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon"
+                             >
+                                 <option value="all">All Types</option>
+                                 <option value="general">General</option>
+                                 <option value="email">Email</option>
+                                 <option value="reminder">Reminder</option>
+                                 <option value="calendar">Calendar</option>
+                             </select>
+
+                             <select 
+                                value={filterPriority} 
+                                onChange={(e) => setFilterPriority(e.target.value)}
+                                className="bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon"
+                             >
+                                 <option value="all">All Priorities</option>
+                                 <option value="low">Low</option>
+                                 <option value="medium">Medium</option>
+                                 <option value="high">High</option>
+                             </select>
+                        </div>
+
                         <button className="text-t-disabled hover:text-t-primary transition-colors"><MoreHorizontal size={20} /></button>
                     </div>
                     
