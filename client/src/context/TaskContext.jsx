@@ -16,6 +16,7 @@ export const TaskProvider = ({ children }) => {
     // Modal State
     const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
     const [createTaskSection, setCreateTaskSection] = useState('');
+    const [editingTask, setEditingTask] = useState(null);
 
     // Navigation/View State
     const [activeView, setActiveView] = useState('project'); // 'inbox', 'today', 'upcoming', 'project'
@@ -61,12 +62,19 @@ export const TaskProvider = ({ children }) => {
 
     const openCreateTask = (section = '') => {
         setCreateTaskSection(section);
+        setEditingTask(null);
+        setIsCreateTaskOpen(true);
+    };
+
+    const openEditTask = (task) => {
+        setEditingTask(task);
         setIsCreateTaskOpen(true);
     };
 
     const closeCreateTask = () => {
         setIsCreateTaskOpen(false);
         setCreateTaskSection('');
+        setEditingTask(null);
     };
 
     return (
@@ -80,6 +88,8 @@ export const TaskProvider = ({ children }) => {
             createTaskSection,
             openCreateTask,
             closeCreateTask,
+            editingTask,
+            openEditTask,
             activeView,
             setActiveView,
             activeProject,

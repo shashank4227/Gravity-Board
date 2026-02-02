@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Zap, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft } from 'lucide-react';
+import { Clock, Zap, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil } from 'lucide-react';
 import classNames from 'classnames';
 import { executeTask, deleteTask } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext'; // Assuming context might be needed for refresh
 
-const TaskCard = ({ task, innerRef, provided, style }) => {
-  const { title, gravityScore, energyLevel, deadline, contextTags, type, priority, status } = task;
+const TaskCard = ({ task, style }) => {
+  const { title, description, gravityScore, energyLevel, deadline, contextTags, type, priority, status } = task;
   const [isExecuting, setIsExecuting] = useState(false);
-  const { refreshTasks } = useTaskContext(); // Assuming this exists or similar
+  const { refreshTasks, openEditTask } = useTaskContext(); // Assuming this exists or similar
 
   const energyColors = {
     low: 'bg-emerald-900/20 text-emerald-400 border border-emerald-500/20',
@@ -24,17 +24,6 @@ const TaskCard = ({ task, innerRef, provided, style }) => {
 
   const formattedDeadline = deadline ? new Date(deadline).toLocaleDateString() : null;
 
-  const handleOpenMail = (e) => {
-      e.stopPropagation();
-      const { recipient, subject, body } = task.actionPayload || {};
-      if (recipient) {
-          const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(title || '')}&body=${encodeURIComponent(description || '')}`;
-          window.open(mailtoLink, '_blank');
-      } else {
-          alert("No recipient specified.");
-      }
-  };
-
   const getTypeIcon = () => {
       switch(type) {
           case 'email': return <Mail size={14} />;
@@ -46,9 +35,6 @@ const TaskCard = ({ task, innerRef, provided, style }) => {
 
   return (
     <motion.div
-      ref={innerRef}
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
       style={style}
       layout
       initial={{ opacity: 0, y: 20 }}
@@ -108,14 +94,15 @@ const TaskCard = ({ task, innerRef, provided, style }) => {
           </div>
 
           <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bottom-0 flex gap-2">
-              {type === 'email' && (
-                  <button 
-                    onClick={handleOpenMail}
-                    className="text-xs bg-neon text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-neon-glow transition-colors shadow-lg shadow-neon/30 font-medium"
-                  >
-                     <Mail size={12} fill="currentColor" /> Open Mail
-                  </button>
-              )}
+               <button 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    openEditTask(task);
+                }}
+                className="text-xs bg-status-warning/10 text-status-warning px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-status-warning/20 transition-colors border border-status-warning/20"
+              >
+                  <Pencil size={12} />
+              </button>
                <button 
                 onClick={(e) => {
                     e.stopPropagation();

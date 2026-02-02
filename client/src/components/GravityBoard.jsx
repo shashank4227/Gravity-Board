@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import TaskCard from './TaskCard'; 
 import FocusMode from './FocusMode';
 import { getTasks, startFocusSession } from '../utils/api';
@@ -69,13 +68,6 @@ const GravityBoard = () => {
         handleTaskCreated();
     };
 
-    const onDragEnd = (result) => {
-        if (!result.destination) return;
-        // Ideally implement detailed drag-and-drop reordering/column switching logic here
-        // For now just refreshing local state for visuals (backend update needed for real persistence)
-        console.log("Moved", result.draggableId, "to", result.destination.droppableId);
-    };
-
     const sections = ['Planning', 'In Progress'];
 
     return (
@@ -129,8 +121,6 @@ const GravityBoard = () => {
                     
                     <div className="flex items-center gap-4">
                         <div className="flex -space-x-2">
-                             <div className="w-8 h-8 rounded-full bg-indigo-500 border-2 border-midnight flex items-center justify-center text-xs font-bold text-white shadow-md">JD</div>
-                             <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-midnight flex items-center justify-center text-xs font-bold text-white shadow-md">MK</div>
                              <button className="w-8 h-8 rounded-full bg-surface border-2 border-dashed border-t-disabled flex items-center justify-center text-t-disabled hover:text-t-primary hover:border-t-primary transition-colors">
                                 <UserPlus size={14} />
                              </button>
@@ -156,90 +146,69 @@ const GravityBoard = () => {
                      </div>
                  )}
 
-                 <DragDropContext onDragEnd={onDragEnd}>
-                    {sections.map((section, sectionIndex) => {
-                        const isHighPriority = section === 'In Progress';
-                        
-                        return (
-                            <motion.div 
-                                key={section} 
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: sectionIndex * 0.1, duration: 0.3 }}
-                                className="min-w-[320px] w-[320px] flex flex-col group/column"
-                            >
-                                {/* Column Header */}
-                                <div className={`flex items-center justify-between mb-6 pl-4 border-l-2 transition-all duration-300 ${isHighPriority ? 'border-neon' : 'border-white/5 group-hover/column:border-white/20'}`}>
-                                    <h3 className={`font-medium text-sm flex items-center gap-3 ${isHighPriority ? 'text-t-primary font-bold' : 'text-t-secondary'}`}>
-                                        <span className={`px-3 py-1 rounded-md text-xs font-semibold ${isHighPriority ? 'bg-neon/10 text-neon' : 'bg-white/5 text-t-secondary'}`}>
-                                            {section}
-                                        </span>
-                                        <span className={`text-xs text-t-disabled`}>
-                                            {groupedTasks[section]?.length || 0}
-                                        </span>
-                                    </h3>
-                                    <div className="flex gap-2 opacity-0 group-hover/column:opacity-100 transition-opacity">
-                                        <button 
-                                            onClick={() => openCreateTask(section)}
-                                            className="text-t-disabled hover:text-t-primary"
-                                        >
-                                            <Plus size={16} />
-                                        </button>
-                                        <button className="text-t-disabled hover:text-t-primary"><MoreHorizontal size={16} /></button>
-                                    </div>
-                                </div>
-
-                                {/* Droppable Area */}
-                                <Droppable droppableId={section}>
-                                    {(provided) => (
-                                        <div 
-                                            {...provided.droppableProps}
-                                            ref={provided.innerRef}
-                                            className="flex-1 space-y-3"
-                                        >
-                                            {(groupedTasks[section] || []).map((task, index) => (
-                                                <Draggable key={task._id} draggableId={task._id} index={index}>
-                                                    {(provided) => (
-                                                        <TaskCard 
-                                                            task={{...task, onFocus: handleEnterFocus}}
-                                                            provided={provided}
-                                                            innerRef={provided.innerRef}
-                                                            style={provided.draggableProps.style}
-                                                            variant="minimal" // Hint to use minimal style if supported
-                                                        />
-                                                    )}
-                                                </Draggable>
-                                            ))}
-                                            {provided.placeholder}
-                                            
-                                            {/* Add Task Button at bottom of column */}
-                                            <button 
-                                                onClick={() => openCreateTask(section)}
-                                                className="w-full flex items-center gap-3 text-t-secondary hover:text-t-primary py-2 text-sm group/add opacity-60 hover:opacity-100 transition-all pl-2"
-                                            >
-                                                <div className="w-5 h-5 rounded-full flex items-center justify-center text-neon bg-neon/10 group-hover/add:bg-neon group-hover/add:text-white transition-colors transform group-hover/add:translate-x-0.5">
-                                                    <Plus size={14} strokeWidth={3} />
-                                                </div>
-                                                <span className="group-hover/add:translate-x-1 transition-transform inline-block">Add task</span>
-                                            </button>
-                                        </div>
-                                    )}
-                                </Droppable>
-                            </motion.div>
-                        );
-                    })}
+                {sections.map((section, sectionIndex) => {
+                    const isHighPriority = section === 'In Progress';
                     
-                    {/* Add Section Column */}
-                    <div className="min-w-[300px] pt-2">
-                        <button 
-                            onClick={() => openCreateTask()}
-                            className="flex items-center gap-2 text-t-disabled font-medium hover:text-t-primary transition-colors text-sm hover:translate-x-1 duration-200"
+                    return (
+                        <div 
+                            key={section} 
+                            className="min-w-[320px] w-[320px] flex flex-col group/column"
                         >
-                            <Plus size={16} /> Add section
-                        </button>
-                    </div>
+                            {/* Column Header */}
+                            <div className={`flex items-center justify-between mb-6 pl-4 border-l-2 transition-all duration-300 ${isHighPriority ? 'border-neon' : 'border-white/5 group-hover/column:border-white/20'}`}>
+                                <h3 className={`font-medium text-sm flex items-center gap-3 ${isHighPriority ? 'text-t-primary font-bold' : 'text-t-secondary'}`}>
+                                    <span className={`px-3 py-1 rounded-md text-xs font-semibold ${isHighPriority ? 'bg-neon/10 text-neon' : 'bg-white/5 text-t-secondary'}`}>
+                                        {section}
+                                    </span>
+                                    <span className={`text-xs text-t-disabled`}>
+                                        {groupedTasks[section]?.length || 0}
+                                    </span>
+                                </h3>
+                                <div className="flex gap-2 opacity-0 group-hover/column:opacity-100 transition-opacity">
+                                    <button 
+                                        onClick={() => openCreateTask(section)}
+                                        className="text-t-disabled hover:text-t-primary"
+                                    >
+                                        <Plus size={16} />
+                                    </button>
+                                    <button className="text-t-disabled hover:text-t-primary"><MoreHorizontal size={16} /></button>
+                                </div>
+                            </div>
 
-                </DragDropContext>
+                            {/* Task List */}
+                            <div className="flex-1 space-y-3">
+                                {(groupedTasks[section] || []).map((task) => (
+                                    <TaskCard 
+                                        key={task._id}
+                                        task={{...task, onFocus: handleEnterFocus}}
+                                        variant="minimal" 
+                                    />
+                                ))}
+                                
+                                {/* Add Task Button at bottom of column */}
+                                <button 
+                                    onClick={() => openCreateTask(section)}
+                                    className="w-full flex items-center gap-3 text-t-secondary hover:text-t-primary py-2 text-sm group/add opacity-60 hover:opacity-100 transition-all pl-2"
+                                >
+                                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-neon bg-neon/10 group-hover/add:bg-neon group-hover/add:text-white transition-colors transform group-hover/add:translate-x-0.5">
+                                        <Plus size={14} strokeWidth={3} />
+                                    </div>
+                                    <span className="group-hover/add:translate-x-1 transition-transform inline-block">Add task</span>
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+                
+                {/* Add Section Column */}
+                <div className="min-w-[300px] pt-2">
+                    <button 
+                        onClick={() => openCreateTask()}
+                        className="flex items-center gap-2 text-t-disabled font-medium hover:text-t-primary transition-colors text-sm hover:translate-x-1 duration-200"
+                    >
+                        <Plus size={16} /> Add section
+                    </button>
+                </div>
             </div>
         </div>
     );

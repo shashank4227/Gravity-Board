@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, Zap, Calendar, MapPin, AlignLeft, RefreshCw, Folder, Mail, Bell, AlertCircle } from 'lucide-react';
-import { createTask } from '../utils/api';
+import { createTask, updateTask } from '../utils/api';
 import classNames from 'classnames';
 
 const CreateTaskForm = ({ onTaskCreated }) => {
-    const { isCreateTaskOpen, closeCreateTask, createTaskSection, onTaskCreated: onGlobalTaskCreated, refreshTasks } = useTaskContext();
+    const { isCreateTaskOpen, closeCreateTask, createTaskSection, onTaskCreated: onGlobalTaskCreated, refreshTasks, editingTask } = useTaskContext();
     const [isLoading, setIsLoading] = useState(false);
     
     // Form State
@@ -25,9 +25,33 @@ const CreateTaskForm = ({ onTaskCreated }) => {
 
     useEffect(() => {
         if (isCreateTaskOpen) {
-            setSection(createTaskSection || '');
+            if (editingTask) {
+                // Populate form with existing task data
+                setTitle(editingTask.title || '');
+                setDescription(editingTask.description || '');
+                setEnergyLevel(editingTask.energyLevel || 'medium');
+                setDeadline(editingTask.deadline ? editingTask.deadline.substring(0, 16) : ''); // Format for datetime-local
+                setContextTags(editingTask.contextTags ? editingTask.contextTags.join(', ') : '');
+                setRecurrence(editingTask.recurrence?.frequency || 'none');
+                setSection(editingTask.section || '');
+                setType(editingTask.type || 'general');
+                setPriority(editingTask.priority || 'medium');
+                setEmailRecipient(editingTask.actionPayload?.recipient || '');
+            } else {
+                // Reset/Default for new task
+                setTitle('');
+                setDescription('');
+                setEnergyLevel('medium');
+                setDeadline('');
+                setContextTags('');
+                setRecurrence('none');
+                setSection(createTaskSection || '');
+                setType('general');
+                setPriority('medium');
+                setEmailRecipient('');
+            }
         }
-    }, [isCreateTaskOpen, createTaskSection]);
+    }, [isCreateTaskOpen, createTaskSection, editingTask]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,7 +67,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 payload.recipient = emailRecipient;
             }
 
-            await createTask({
+            const taskData = {
                 title,
                 description,
                 energyLevel,
@@ -54,7 +78,13 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 type,
                 priority,
                 actionPayload: payload
-            });
+            };
+
+            if (editingTask) {
+                await updateTask(editingTask._id, taskData);
+            } else {
+                await createTask(taskData);
+            }
 
             // Reset and close
             setTitle('');
@@ -73,8 +103,8 @@ const CreateTaskForm = ({ onTaskCreated }) => {
             
             if (onTaskCreated) onTaskCreated();
         } catch (error) {
-            console.error("Failed to create task", error);
-            alert("Failed to create task. Check console.");
+            console.error("Failed to save task", error);
+            alert("Failed to save task. Check console.");
         } finally {
             setIsLoading(false);
         }
@@ -105,7 +135,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 className="bg-surface p-6 rounded-3xl shadow-2xl border border-white/10 overflow-hidden w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-t-primary tracking-tight">New Action Item</h2>
+                    <h2 className="text-xl font-bold text-t-primary tracking-tight">{editingTask ? 'Edit Action Item' : 'New Action Item'}</h2>
                     <button 
                         onClick={closeCreateTask}
                         className="p-2 hover:bg-elevated rounded-full text-t-disabled hover:text-t-primary transition-colors"
@@ -286,7 +316,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                                 disabled={isLoading || !title}
                                 className="bg-neon text-white px-8 py-3 rounded-xl font-bold tracking-wide hover:bg-neon-glow transition-all shadow-lg shadow-neon/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:scale-105 active:scale-95"
                             >
-                                {isLoading ? 'Aligning...' : 'Initiate Action'}
+                                {isLoading ? (editingTask ? 'Updating...' : 'Aligning...') : (editingTask ? 'Update Action' : 'Initiate Action')}
                                 {!isLoading && <Plus size={18} strokeWidth={3} />}
                             </button>
                         </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { useAuth } from '../context/AuthContext';
-import { ChevronDown, Plus, Search, Inbox, Calendar, CalendarDays, Hash, LogOut, User } from 'lucide-react';
+import { ChevronDown, Plus, Search, Calendar, CalendarDays, Hash, LogOut, User } from 'lucide-react';
 import classNames from 'classnames';
 
 const Sidebar = () => {
@@ -43,16 +43,6 @@ const Sidebar = () => {
                 </button>
                 <button className="w-full flex items-center gap-3 px-2 py-1.5 text-t-secondary hover:bg-white/5 hover:text-t-primary rounded-lg transition-colors text-sm">
                     <Search size={18} /> Search
-                </button>
-                <button 
-                    onClick={() => setActiveView('inbox')}
-                    className={classNames(
-                        "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm",
-                        activeView === 'inbox' ? "bg-white/5 text-t-primary" : "text-t-secondary hover:bg-white/5 hover:text-t-primary"
-                    )}
-                >
-                    <Inbox size={18} /> Inbox
-                    {counts?.inbox > 0 && <span className="ml-auto text-xs text-t-disabled">{counts.inbox}</span>}
                 </button>
                 <button 
                     onClick={() => setActiveView('today')}
