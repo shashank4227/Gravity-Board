@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const Task = require('../models/Task');
+const auth = require('../middleware/auth');
 const { calculateGravity } = require('../utils/gravityEngine');
 
 // GET all tasks (eventually will return only surfaced ones)
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
-        const tasks = await Task.find();
+        const tasks = await Task.find({ user: req.user.id });
         
         // Recalculate gravity for all tasks based on current time (and potential user context from query)
         // For now, assuming context is passed via query params or defaults
@@ -30,7 +31,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST new task
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const task = new Task({
         title: req.body.title,
         description: req.body.description,
@@ -40,7 +41,8 @@ router.post('/', async (req, res) => {
         deadline: req.body.deadline,
         contextTags: req.body.contextTags,
         recurrence: req.body.recurrence,
-        section: req.body.section
+        section: req.body.section,
+        user: req.user.id
     });
 
     // Calculate initial gravity

@@ -7,6 +7,12 @@ const TaskSchema = new mongoose.Schema({
         trim: true
     },
     description: String,
+
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     
     // Core AntiGravity Metrics
     gravityScore: {
