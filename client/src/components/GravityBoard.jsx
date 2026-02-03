@@ -191,11 +191,11 @@ const GravityBoard = () => {
                     </div>
                     
                     {/* Mobile Filters (Row 2) */}
-                    <div className="flex md:hidden gap-2 w-full">
+                    <div className="flex md:hidden gap-2 w-full mt-2">
                          <select 
                                 value={filterType} 
                                 onChange={(e) => setFilterType(e.target.value)}
-                                className="flex-1 bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon"
+                                className="flex-1 bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon py-3 px-2"
                              >
                                  <option value="all">Types</option>
                                  <option value="general">General</option>
@@ -207,7 +207,7 @@ const GravityBoard = () => {
                              <select 
                                 value={filterPriority} 
                                 onChange={(e) => setFilterPriority(e.target.value)}
-                                className="flex-1 bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon"
+                                className="flex-1 bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon py-3 px-2"
                              >
                                  <option value="all">Priorities</option>
                                  <option value="low">Low</option>
