@@ -29,6 +29,12 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
+            // If user is already loaded (e.g. from optimized login), don't re-fetch
+            if (user) {
+                setLoading(false);
+                return;
+            }
+
             // Ensure we are in loading state while fetching
             setLoading(true);
 
@@ -50,14 +56,14 @@ export const AuthProvider = ({ children }) => {
         };
 
         loadUser();
-    }, [token]);
+    }, [token, user]);
 
     const login = async (email, password) => {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         try {
             const res = await axios.post(`${API_URL}/auth/login`, { email, password });
+            setUser(res.data.user); // Optimistic update
             setToken(res.data.token);
-            // User loading will be triggered by token change effect
             return true;
         } catch (err) {
             console.error("Login failed", err);
@@ -69,6 +75,7 @@ export const AuthProvider = ({ children }) => {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         try {
             const res = await axios.post(`${API_URL}/auth/register`, { username, email, password });
+            setUser(res.data.user); // Optimistic update
             setToken(res.data.token);
             return true;
         } catch (err) {
