@@ -1,19 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import TaskCard from './TaskCard'; 
 import FocusMode from './FocusMode';
 import { getTasks, startFocusSession } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Plus, MessageSquare, SlidersHorizontal, ChevronRight, Menu } from 'lucide-react';
+import { MoreHorizontal, Plus, MessageSquare, SlidersHorizontal, ChevronRight, Menu, Bell, Check } from 'lucide-react';
+import classNames from 'classnames';
 
 const GravityBoard = () => {
-    const { openCreateTask, activeView, tasks, refreshTasks, toggleMobileSidebar } = useTaskContext();
+    const { 
+        openCreateTask, 
+        activeView, 
+        tasks, 
+        refreshTasks, 
+        toggleMobileSidebar,
+        notifications,
+        unreadCount,
+        markRead,
+        markAllRead,
+        requestNotificationPermission
+    } = useTaskContext();
     const [activeFocusSession, setActiveFocusSession] = useState(null);
     const [groupedTasks, setGroupedTasks] = useState({});
+
+    // Notification State
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const notifRef = useRef(null);
 
     // Filter States
     const [filterType, setFilterType] = useState('all');
     const [filterPriority, setFilterPriority] = useState('all');
+
+    // Close notification panel when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (notifRef.current && !notifRef.current.contains(event.target)) {
+                setIsNotifOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Grouping Logic
     useEffect(() => {
@@ -167,12 +194,81 @@ const GravityBoard = () => {
                     
                     <div className="flex items-center gap-4 w-full md:w-auto justify-end">
 
-                        <button className="flex items-center gap-2 text-sm text-t-secondary hover:text-t-primary transition-colors">
-                            <SlidersHorizontal size={16} /> View
-                        </button>
-                         <button className="text-t-secondary hover:text-t-primary transition-colors">
-                            <MessageSquare size={18} />
-                        </button>
+                        {/* Notification Bell */}
+                        <div className="relative" ref={notifRef}>
+                            <button 
+                                onClick={() => {
+                                    setIsNotifOpen(!isNotifOpen);
+                                    if (!isNotifOpen) requestNotificationPermission(); 
+                                }}
+                                className={classNames(
+                                    "p-2 rounded-lg transition-colors relative",
+                                    isNotifOpen ? "bg-white/10 text-neon" : "text-t-secondary hover:text-t-primary hover:bg-white/5"
+                                )}
+                            >
+                                <Bell size={20} />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-status-error rounded-full ring-2 ring-surface" />
+                                )}
+                            </button>
+
+                            {/* Notification Panel */}
+                            {isNotifOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-80 bg-elevated border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[400px]">
+                                    <div className="p-3 border-b border-white/5 flex justify-between items-center bg-surface">
+                                        <h4 className="text-xs font-bold uppercase tracking-wider text-t-secondary">Notifications</h4>
+                                        {unreadCount > 0 && (
+                                            <button onClick={markAllRead} className="text-[10px] text-neon hover:underline">
+                                                Mark all read
+                                            </button>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="overflow-y-auto flex-1 custom-scrollbar">
+                                        {notifications.length === 0 ? (
+                                            <div className="p-8 text-center text-t-disabled text-sm flex flex-col items-center gap-2">
+                                                <Bell size={24} className="opacity-20" />
+                                                <p>No new notifications</p>
+                                            </div>
+                                        ) : (
+                                            notifications.map(notif => (
+                                                <div 
+                                                    key={notif.id} 
+                                                    className={classNames(
+                                                        "p-3 border-b border-white/5 hover:bg-white/5 transition-colors flex gap-3 group relative",
+                                                        !notif.read ? "bg-neon/5" : ""
+                                                    )}
+                                                >
+                                                    <div className={classNames(
+                                                        "mt-1 w-1.5 h-1.5 rounded-full shrink-0",
+                                                        !notif.read ? "bg-neon" : "bg-transparent"
+                                                    )} />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={classNames("text-xs font-medium truncate", !notif.read ? "text-t-primary" : "text-t-secondary")}>
+                                                            {notif.title}
+                                                        </p>
+                                                        <p className="text-xs text-t-disabled line-clamp-2 mt-0.5">{notif.body}</p>
+                                                        <p className="text-[10px] text-t-disabled mt-1.5">
+                                                            {new Date(notif.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                        </p>
+                                                    </div>
+                                                    {!notif.read && (
+                                                        <button 
+                                                            onClick={(e) => { e.stopPropagation(); markRead(notif.id); }}
+                                                            className="absolute right-2 top-2 p-1 text-t-disabled hover:text-neon opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            title="Mark as read"
+                                                        >
+                                                            <Check size={12} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                     </div>
                 </div>
             </header>

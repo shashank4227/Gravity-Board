@@ -76,7 +76,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 title,
                 description,
                 energyLevel,
-                deadline: deadline || null,
+                deadline: deadline ? new Date(deadline).toISOString() : null,
                 contextTags: tags,
                 recurrence: { frequency: recurrence },
                 section: section || 'General',

@@ -13,7 +13,7 @@ import useTaskNotifications from './hooks/useTaskNotifications';
 // Inner component to access context
 const AppContent = () => {
     const { tasks } = useTaskContext();
-    useTaskNotifications(tasks);
+    // Notifications handled in TaskContext
 
     return (
         <Routes>

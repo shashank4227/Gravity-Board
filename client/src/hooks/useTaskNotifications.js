@@ -1,12 +1,46 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const useTaskNotifications = (tasks) => {
     // Track sent notifications to prevent duplicates
     // Format: "taskId-threshold" e.g. "123-1hour", "123-10min"
     const sentNotifications = useRef(new Set());
+    
+    // Internal state for notification history
+    const [notifications, setNotifications] = useState([]);
+
+    const addNotification = (title, body, taskId) => {
+        const newNotif = {
+            id: Date.now().toString(),
+            title,
+            body,
+            taskId,
+            timestamp: new Date(),
+            read: false
+        };
+        setNotifications(prev => [newNotif, ...prev].slice(0, 50)); // Keep last 50
+    };
+
+    const markRead = (id) => {
+        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    };
+
+    const markAllRead = () => {
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    };
+
+    const requestPermission = () => {
+        if (!("Notification" in window)) {
+            alert("This browser does not support desktop notification");
+        } else if (Notification.permission === "granted") {
+            // Already granted
+            new Notification(`GravityBoard`, { body: "Notifications are monitoring deadlines." });
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+    };
 
     useEffect(() => {
-        // Request permission on mount
+        // Request permission on mount if default
         if (Notification.permission === 'default') {
             Notification.requestPermission();
         }
@@ -32,6 +66,7 @@ const useTaskNotifications = (tasks) => {
                              body: `"${task.title}" is due in 1 hour.`,
                              icon: '/favicon.ico' // generic icon if avail
                          });
+                         addNotification('Task Due Soon', `"${task.title}" is due in 1 hour.`, task._id);
                          sentNotifications.current.add(key);
                      }
                  }
@@ -44,6 +79,7 @@ const useTaskNotifications = (tasks) => {
                              body: `"${task.title}" is due in 10 minutes!`,
                              icon: '/favicon.ico'
                          });
+                         addNotification('Immediate Deadline', `"${task.title}" is due in 10 minutes!`, task._id);
                          sentNotifications.current.add(key);
                      }
                  }
@@ -58,6 +94,14 @@ const useTaskNotifications = (tasks) => {
 
         return () => clearInterval(intervalId);
     }, [tasks]);
+
+    return { 
+        notifications, 
+        unreadCount: notifications.filter(n => !n.read).length,
+        markRead,
+        markAllRead,
+        requestPermission
+    };
 };
 
 export default useTaskNotifications;

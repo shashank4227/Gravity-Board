@@ -5,7 +5,16 @@ import { ChevronDown, Plus, Search, Calendar, CalendarDays, Hash, LogOut, User, 
 import classNames from 'classnames';
 
 const Sidebar = () => {
-    const { openCreateTask, setActiveView, activeView, counts, projects, activeProject, setActiveProject, isMobileSidebarOpen, toggleMobileSidebar } = useTaskContext();
+    const { 
+        openCreateTask, 
+        setActiveView, 
+        activeView, 
+        counts, 
+        projects, 
+        isMobileSidebarOpen, 
+        toggleMobileSidebar
+    } = useTaskContext();
+    
     const { user, logout } = useAuth();
 
     const getInitials = (name) => {
@@ -33,22 +42,22 @@ const Sidebar = () => {
                 isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}>
             {/* User Profile Header */}
-            <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer group relative">
+            <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors group relative border-b border-white/5">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-neon to-purple-600 flex items-center justify-center text-white font-bold text-xs">
                         {getInitials(user?.username)}
                     </div>
                     <span className="font-medium text-sm text-t-primary truncate max-w-[120px]">
-                        {user?.username || 'Guest Check-in'}
+                        {user?.username || 'Guest'}
                     </span>
                 </div>
-                <div className="flex items-center gap-2">
-                     <button onClick={logout} className="text-t-secondary hover:text-status-error transition-colors" title="Logout">
-                        <LogOut size={14} />
+                <div className="flex items-center gap-1">
+                     <button onClick={logout} className="p-1.5 text-t-secondary hover:text-status-error transition-colors rounded-lg hover:bg-white/5" title="Logout">
+                        <LogOut size={18} />
                     </button>
                     <button 
                         onClick={toggleMobileSidebar}
-                        className="md:hidden text-t-secondary hover:text-t-primary transition-colors"
+                        className="md:hidden p-1.5 text-t-secondary hover:text-t-primary transition-colors"
                     >
                         <X size={18} />
                     </button>
@@ -56,7 +65,7 @@ const Sidebar = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="px-3 py-2 space-y-1">
+            <div className="px-3 py-2 space-y-1 mt-2">
                 <button 
                     onClick={() => handleNavigation(() => openCreateTask())}
                     className="w-full flex items-center gap-2 px-2 py-1.5 text-neon hover:bg-white/5 rounded-lg transition-colors font-semibold text-sm"
@@ -91,7 +100,7 @@ const Sidebar = () => {
                 </button>
             </div>
 
-            {/* Favorites Section (Static for now, could be dynamic later) */}
+            {/* Favorites Section */}
             <div className="mt-6 px-3">
                 <div className="flex items-center justify-between px-2 mb-2 text-t-disabled hover:text-t-secondary cursor-pointer group">
                     <span className="text-xs font-bold uppercase tracking-wider">Favorites</span>

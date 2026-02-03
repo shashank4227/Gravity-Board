@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { getTasks } from '../utils/api';
-import { useAuth } from './AuthContext'; // To ensure we only fetch when logged in
+import { useAuth } from './AuthContext';
+import useTaskNotifications from '../hooks/useTaskNotifications';
 
 const TaskContext = createContext();
 
@@ -21,6 +22,9 @@ export const TaskProvider = ({ children }) => {
     // Navigation/View State
     const [activeView, setActiveView] = useState('project'); // 'inbox', 'today', 'upcoming', 'project'
     const [activeProject, setActiveProject] = useState('GravityBoard'); // Default project or 'General'
+
+    // Notification Logic
+    const { notifications, unreadCount, markRead, markAllRead, requestPermission } = useTaskNotifications(tasks);
 
     const refreshTasks = async () => {
         if (!isAuthenticated) return;
@@ -98,7 +102,12 @@ export const TaskProvider = ({ children }) => {
             activeProject,
             setActiveProject,
             isMobileSidebarOpen,
-            toggleMobileSidebar
+            toggleMobileSidebar,
+            notifications,
+            unreadCount,
+            markRead,
+            markAllRead,
+            requestNotificationPermission: requestPermission
         }}>
             {children}
         </TaskContext.Provider>
