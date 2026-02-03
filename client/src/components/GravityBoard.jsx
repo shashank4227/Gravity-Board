@@ -44,6 +44,20 @@ const GravityBoard = () => {
             const section = task.section || 'Inbox';
             if (!acc[section]) acc[section] = [];
             acc[section].push(task);
+            // Sort Logic: Priority Desc > Deadline Asc > Title Asc
+            acc[section].sort((a, b) => {
+                const priorityWeight = { high: 3, medium: 2, low: 1 };
+                const pA = priorityWeight[a.priority || 'medium'];
+                const pB = priorityWeight[b.priority || 'medium'];
+                
+                if (pA !== pB) return pB - pA; // Higher priority first
+                
+                if (a.deadline && b.deadline) return new Date(a.deadline) - new Date(b.deadline); // Sooner deadline first
+                if (a.deadline && !b.deadline) return -1;
+                if (!a.deadline && b.deadline) return 1;
+                
+                return a.title.localeCompare(b.title);
+            });
             return acc;
         }, {});
 

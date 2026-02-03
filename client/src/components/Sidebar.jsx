@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { useAuth } from '../context/AuthContext';
-import { ChevronDown, Plus, Search, Calendar, CalendarDays, Hash, LogOut, User } from 'lucide-react';
+import { ChevronDown, Plus, Search, Calendar, CalendarDays, Hash, LogOut, User, X } from 'lucide-react';
 import classNames from 'classnames';
 
 const Sidebar = () => {
@@ -10,6 +10,11 @@ const Sidebar = () => {
 
     const getInitials = (name) => {
         return name ? name.substring(0, 2).toUpperCase() : 'AG';
+    };
+
+    const handleNavigation = (callback) => {
+        if (callback) callback();
+        if (isMobileSidebarOpen) toggleMobileSidebar();
     };
 
     return (
@@ -24,7 +29,7 @@ const Sidebar = () => {
             />
 
             <aside className={classNames(
-                "fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-white/5 flex flex-col h-screen transition-transform duration-300 md:translate-x-0 md:static md:shrink-0",
+                "fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[300px] md:w-64 bg-surface border-r border-white/5 flex flex-col h-screen transition-transform duration-300 md:translate-x-0 md:static md:shrink-0",
                 isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}>
             {/* User Profile Header */}
@@ -37,16 +42,23 @@ const Sidebar = () => {
                         {user?.username || 'Guest Check-in'}
                     </span>
                 </div>
-                {/* Simple dropdown trigger or logout for now */}
-                 <button onClick={logout} className="text-t-secondary hover:text-status-error transition-colors" title="Logout">
-                    <LogOut size={14} />
-                </button>
+                <div className="flex items-center gap-2">
+                     <button onClick={logout} className="text-t-secondary hover:text-status-error transition-colors" title="Logout">
+                        <LogOut size={14} />
+                    </button>
+                    <button 
+                        onClick={toggleMobileSidebar}
+                        className="md:hidden text-t-secondary hover:text-t-primary transition-colors"
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
             </div>
 
             {/* Quick Actions */}
             <div className="px-3 py-2 space-y-1">
                 <button 
-                    onClick={() => openCreateTask()}
+                    onClick={() => handleNavigation(() => openCreateTask())}
                     className="w-full flex items-center gap-2 px-2 py-1.5 text-neon hover:bg-white/5 rounded-lg transition-colors font-semibold text-sm"
                 >
                     <div className="bg-neon/20 p-1 rounded-full text-neon">
@@ -58,7 +70,7 @@ const Sidebar = () => {
                     <Search size={18} /> Search
                 </button>
                 <button 
-                    onClick={() => setActiveView('today')}
+                    onClick={() => handleNavigation(() => setActiveView('today'))}
                     className={classNames(
                         "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm",
                          activeView === 'today' ? "bg-white/5 text-t-primary" : "text-t-secondary hover:bg-white/5 hover:text-t-primary"
@@ -68,7 +80,7 @@ const Sidebar = () => {
                     {counts?.today > 0 && <span className="ml-auto text-xs text-t-disabled">{counts.today}</span>}
                 </button>
                 <button 
-                     onClick={() => setActiveView('upcoming')}
+                     onClick={() => handleNavigation(() => setActiveView('upcoming'))}
                      className={classNames(
                         "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm",
                          activeView === 'upcoming' ? "bg-white/5 text-t-primary" : "text-t-secondary hover:bg-white/5 hover:text-t-primary"
@@ -102,7 +114,7 @@ const Sidebar = () => {
                 </div>
                 <div className="space-y-1">
                      <button 
-                        onClick={() => setActiveView('project')}
+                        onClick={() => handleNavigation(() => setActiveView('project'))}
                         className={classNames(
                             "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm font-medium",
                             activeView === 'project' ? 'bg-white/10 text-t-primary' : 'text-t-secondary hover:bg-white/5 hover:text-t-primary'

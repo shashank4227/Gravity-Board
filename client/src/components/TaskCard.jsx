@@ -60,16 +60,20 @@ const TaskCard = ({ task, style }) => {
             <span className="text-xs font-mono font-bold text-neon-glow bg-elevated border border-white/10 px-2 py-1 rounded">
             {gravityScore.toFixed(1)} G
             </span>
-             {priority && priority !== 'medium' && (
-                 <span className={classNames("text-[10px] font-bold uppercase tracking-wider", priorityColors[priority])}>
-                     {priority}
-                 </span>
-             )}
         </div>
         
       </div>
 
       <div className="flex gap-2 mb-4 pl-3 flex-wrap">
+        {priority && (
+             <span className={classNames("text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-semibold flex items-center gap-1.5 border", 
+                priority === 'high' ? 'bg-status-error/10 text-status-error border-status-error/20' : 
+                priority === 'medium' ? 'bg-status-warning/10 text-status-warning border-status-warning/20' : 
+                'bg-emerald-900/20 text-emerald-400 border-emerald-500/20'
+             )}>
+                <AlertCircle size={10} strokeWidth={3} /> {priority}
+             </span>
+        )}
         <span className={classNames("text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-semibold flex items-center gap-1.5", energyColors[energyLevel])}>
           <Zap size={10} strokeWidth={3} /> {energyLevel}
         </span>
