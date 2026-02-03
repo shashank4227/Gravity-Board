@@ -4,7 +4,7 @@ import FocusMode from './FocusMode';
 import { getTasks, startFocusSession } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Plus, MessageSquare, SlidersHorizontal, ChevronRight, Menu, Bell, Check } from 'lucide-react';
+import { MoreHorizontal, Plus, MessageSquare, SlidersHorizontal, ChevronRight, Menu, Bell, Check, Search } from 'lucide-react';
 import classNames from 'classnames';
 
 const GravityBoard = () => {
@@ -30,6 +30,7 @@ const GravityBoard = () => {
     // Filter States
     const [filterType, setFilterType] = useState('all');
     const [filterPriority, setFilterPriority] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Close notification panel when clicking outside
     useEffect(() => {
@@ -65,6 +66,15 @@ const GravityBoard = () => {
         if (filterPriority !== 'all') {
             data = data.filter(t => t.priority === filterPriority);
         }
+
+        // Apply Search Filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            data = data.filter(t => 
+                t.title.toLowerCase().includes(query) || 
+                (t.description && t.description.toLowerCase().includes(query))
+            );
+        }
         
         // Group by Section
         const groups = data.reduce((acc, task) => {
@@ -93,7 +103,7 @@ const GravityBoard = () => {
         if (!groups['In Progress']) groups['In Progress'] = [];
         
         setGroupedTasks(groups);
-    }, [tasks, activeView, filterType, filterPriority]);
+    }, [tasks, activeView, filterType, filterPriority, searchQuery]);
 
     const handleTaskCreated = () => {
         refreshTasks();
@@ -124,7 +134,7 @@ const GravityBoard = () => {
             </AnimatePresence>
 
              {/* Header Region */}
-            <header className="px-6 py-4 mb-2 relative z-10 border-b border-white/5 bg-midnight/50 backdrop-blur-sm">
+            <header className="px-6 py-4 mb-2 relative z-50 border-b border-white/5 bg-midnight/50 backdrop-blur-sm">
                 
                 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -135,10 +145,22 @@ const GravityBoard = () => {
                         >
                             <Menu size={24} />
                         </button>
-                        <h1 className="text-3xl font-bold text-t-primary tracking-wide leading-tight">GravityBoard</h1>
+                        <h1 className="text-3xl font-bold text-t-primary tracking-wide leading-tight hidden md:block">GravityBoard</h1>
                         
+                        {/* Search Bar */}
+                        <div className="relative flex-1 md:w-64 md:ml-8">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-t-disabled" size={16} />
+                            <input 
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search tasks..."
+                                className="w-full bg-elevated border border-white/5 rounded-xl py-2 pl-10 pr-4 text-sm text-t-primary focus:border-neon/50 focus:ring-1 focus:ring-neon/50 transition-all outline-none placeholder-t-disabled"
+                            />
+                        </div>
+
                         {/* Filters */}
-                        <div className="hidden md:flex items-center gap-2 ml-8">
+                        <div className="hidden md:flex items-center gap-2">
                              <select 
                                 value={filterType} 
                                 onChange={(e) => setFilterType(e.target.value)}

@@ -75,9 +75,7 @@ const Sidebar = () => {
                     </div>
                     Add task
                 </button>
-                <button className="w-full flex items-center gap-3 px-2 py-1.5 text-t-secondary hover:bg-white/5 hover:text-t-primary rounded-lg transition-colors text-sm">
-                    <Search size={18} /> Search
-                </button>
+                
                 <button 
                     onClick={() => handleNavigation(() => setActiveView('today'))}
                     className={classNames(
