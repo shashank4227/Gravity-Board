@@ -126,13 +126,13 @@ const CreateTaskForm = ({ onTaskCreated }) => {
     if (!isCreateTaskOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-4">
             <motion.div
                 layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-surface p-6 rounded-3xl shadow-2xl border border-white/10 overflow-hidden w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="bg-surface p-6 md:rounded-3xl shadow-2xl border-t md:border border-white/10 overflow-hidden w-full h-[90vh] md:h-auto md:max-w-2xl md:max-h-[90vh] overflow-y-auto custom-scrollbar rounded-t-3xl"
             >
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-bold text-t-primary tracking-tight">{editingTask ? 'Edit Action Item' : 'New Action Item'}</h2>

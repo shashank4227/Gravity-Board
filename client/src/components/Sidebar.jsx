@@ -5,7 +5,7 @@ import { ChevronDown, Plus, Search, Calendar, CalendarDays, Hash, LogOut, User }
 import classNames from 'classnames';
 
 const Sidebar = () => {
-    const { openCreateTask, setActiveView, activeView, counts, projects, activeProject, setActiveProject } = useTaskContext();
+    const { openCreateTask, setActiveView, activeView, counts, projects, activeProject, setActiveProject, isMobileSidebarOpen, toggleMobileSidebar } = useTaskContext();
     const { user, logout } = useAuth();
 
     const getInitials = (name) => {
@@ -13,7 +13,20 @@ const Sidebar = () => {
     };
 
     return (
-        <aside className="w-64 bg-surface border-r border-white/5 flex flex-col h-screen sticky top-0 overflow-y-auto z-40 shrink-0">
+        <>
+            {/* Mobile Backdrop */}
+            <div 
+                className={classNames(
+                    "fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-opacity",
+                    isMobileSidebarOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                )}
+                onClick={toggleMobileSidebar}
+            />
+
+            <aside className={classNames(
+                "fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-white/5 flex flex-col h-screen transition-transform duration-300 md:translate-x-0 md:static md:shrink-0",
+                isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            )}>
             {/* User Profile Header */}
             <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer group relative">
                 <div className="flex items-center gap-2">
@@ -126,6 +139,7 @@ const Sidebar = () => {
                 </button>
              </div>
         </aside>
+        </>
     );
 };
 

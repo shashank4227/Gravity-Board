@@ -4,10 +4,10 @@ import FocusMode from './FocusMode';
 import { getTasks, startFocusSession } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreHorizontal, Plus, Share2, MessageSquare, SlidersHorizontal, UserPlus, ChevronRight } from 'lucide-react';
+import { MoreHorizontal, Plus, MessageSquare, SlidersHorizontal, ChevronRight, Menu } from 'lucide-react';
 
 const GravityBoard = () => {
-    const { openCreateTask, activeView, tasks, refreshTasks } = useTaskContext();
+    const { openCreateTask, activeView, tasks, refreshTasks, toggleMobileSidebar } = useTaskContext();
     const [activeFocusSession, setActiveFocusSession] = useState(null);
     const [groupedTasks, setGroupedTasks] = useState({});
 
@@ -86,12 +86,18 @@ const GravityBoard = () => {
             <header className="px-6 py-4 mb-2 relative z-10 border-b border-white/5 bg-midnight/50 backdrop-blur-sm">
                 
                 
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <button 
+                            onClick={toggleMobileSidebar}
+                            className="md:hidden p-2 -ml-2 text-t-secondary hover:text-t-primary"
+                        >
+                            <Menu size={24} />
+                        </button>
                         <h1 className="text-3xl font-bold text-t-primary tracking-wide leading-tight">GravityBoard</h1>
                         
                         {/* Filters */}
-                        <div className="flex items-center gap-2 ml-8">
+                        <div className="hidden md:flex items-center gap-2 ml-8">
                              <select 
                                 value={filterType} 
                                 onChange={(e) => setFilterType(e.target.value)}
@@ -116,17 +122,37 @@ const GravityBoard = () => {
                              </select>
                         </div>
 
-                        <button className="text-t-disabled hover:text-t-primary transition-colors"><MoreHorizontal size={20} /></button>
+                        <button className="hidden md:block text-t-disabled hover:text-t-primary transition-colors"><MoreHorizontal size={20} /></button>
                     </div>
                     
-                    <div className="flex items-center gap-4">
-                        <div className="flex -space-x-2">
-                             <button className="w-8 h-8 rounded-full bg-surface border-2 border-dashed border-t-disabled flex items-center justify-center text-t-disabled hover:text-t-primary hover:border-t-primary transition-colors">
-                                <UserPlus size={14} />
-                             </button>
-                        </div>
-                        <span className="text-t-disabled text-sm">Share</span>
-                        <div className="h-4 w-[1px] bg-white/10"></div>
+                    {/* Mobile Filters (Row 2) */}
+                    <div className="flex md:hidden gap-2 w-full">
+                         <select 
+                                value={filterType} 
+                                onChange={(e) => setFilterType(e.target.value)}
+                                className="flex-1 bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon"
+                             >
+                                 <option value="all">Types</option>
+                                 <option value="general">General</option>
+                                 <option value="email">Email</option>
+                                 <option value="reminder">Reminder</option>
+                                 <option value="calendar">Calendar</option>
+                             </select>
+
+                             <select 
+                                value={filterPriority} 
+                                onChange={(e) => setFilterPriority(e.target.value)}
+                                className="flex-1 bg-elevated text-xs text-t-secondary border-none rounded-lg focus:ring-1 focus:ring-neon"
+                             >
+                                 <option value="all">Priorities</option>
+                                 <option value="low">Low</option>
+                                 <option value="medium">Medium</option>
+                                 <option value="high">High</option>
+                             </select>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 w-full md:w-auto justify-end">
+
                         <button className="flex items-center gap-2 text-sm text-t-secondary hover:text-t-primary transition-colors">
                             <SlidersHorizontal size={16} /> View
                         </button>

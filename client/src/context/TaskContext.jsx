@@ -71,6 +71,9 @@ export const TaskProvider = ({ children }) => {
         setIsCreateTaskOpen(true);
     };
 
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const toggleMobileSidebar = () => setIsMobileSidebarOpen(!isMobileSidebarOpen);
+
     const closeCreateTask = () => {
         setIsCreateTaskOpen(false);
         setCreateTaskSection('');
@@ -93,7 +96,9 @@ export const TaskProvider = ({ children }) => {
             activeView,
             setActiveView,
             activeProject,
-            setActiveProject
+            setActiveProject,
+            isMobileSidebarOpen,
+            toggleMobileSidebar
         }}>
             {children}
         </TaskContext.Provider>
