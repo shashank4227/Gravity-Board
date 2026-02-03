@@ -16,8 +16,12 @@ const calculateGravity = (task, userContext = {}) => {
     // Maps energy level to numeric modifier
     const energyMap = { 'low': 0.8, 'medium': 1.0, 'high': 1.2 }; 
     const taskEnergyMod = energyMap[task.energyLevel] || 1.0;
+
+    // Priority Modifier
+    const priorityMap = { 'low': 0.8, 'medium': 1.0, 'high': 1.5 };
+    const priorityMod = priorityMap[task.priority] || 1.0;
     
-    let gravity = (task.urgency || 5) * (task.effort || 5) * taskEnergyMod;
+    let gravity = (task.urgency || 5) * (task.effort || 5) * taskEnergyMod * priorityMod;
 
     // 2. Deadline Pressure ( Exponential increase as deadline approaches )
     if (deadline) {

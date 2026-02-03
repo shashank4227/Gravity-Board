@@ -52,6 +52,17 @@ const Sidebar = () => {
                     </span>
                 </div>
                 <div className="flex items-center gap-1">
+                    <button 
+                        onClick={() => {
+                            localStorage.removeItem("gravityBoard_intro_completed");
+                            localStorage.removeItem("gravityBoard_gravity_explained"); // Reset gravity tour too
+                            window.location.reload();
+                        }} 
+                        className="p-1.5 text-t-secondary hover:text-neon transition-colors rounded-lg hover:bg-white/5" 
+                        title="Take Tour"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    </button>
                      <button onClick={logout} className="p-1.5 text-t-secondary hover:text-status-error transition-colors rounded-lg hover:bg-white/5" title="Logout">
                         <LogOut size={18} />
                     </button>

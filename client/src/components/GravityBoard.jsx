@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import TaskCard from './TaskCard'; 
 import FocusMode from './FocusMode';
+import TourGuide from './TourGuide';
 import { getTasks, startFocusSession } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -83,20 +84,8 @@ const GravityBoard = () => {
             const section = task.section || 'Inbox';
             if (!acc[section]) acc[section] = [];
             acc[section].push(task);
-            // Sort Logic: Priority Desc > Deadline Asc > Title Asc
-            acc[section].sort((a, b) => {
-                const priorityWeight = { high: 3, medium: 2, low: 1 };
-                const pA = priorityWeight[a.priority || 'medium'];
-                const pB = priorityWeight[b.priority || 'medium'];
-                
-                if (pA !== pB) return pB - pA; // Higher priority first
-                
-                if (a.deadline && b.deadline) return new Date(a.deadline) - new Date(b.deadline); // Sooner deadline first
-                if (a.deadline && !b.deadline) return -1;
-                if (!a.deadline && b.deadline) return 1;
-                
-                return a.title.localeCompare(b.title);
-            });
+            // Sort by Gravity Score Descending (Heaviest/Most Important first)
+            acc[section].sort((a, b) => (b.gravityScore || 0) - (a.gravityScore || 0));
             return acc;
         }, {});
 
@@ -125,7 +114,7 @@ const GravityBoard = () => {
 
     return (
         <div className="flex-1 min-h-screen bg-midnight text-t-primary pt-6 transition-all will-change-transform relative overflow-hidden">
-             
+             <TourGuide />
              {/* Background Detail - Faint Abstract Field */}
              <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-neon/5 to-transparent opacity-50 pointer-events-none z-0"></div>
 
@@ -347,6 +336,7 @@ const GravityBoard = () => {
                                 
                                 {/* Add Task Button at bottom of column */}
                                 <button 
+                                    data-tour="add-task-btn"
                                     onClick={() => openCreateTask(section)}
                                     className="w-full flex items-center gap-3 text-t-secondary hover:text-t-primary py-2 text-sm group/add opacity-60 hover:opacity-100 transition-all pl-2"
                                 >

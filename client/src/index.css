@@ -29,3 +29,46 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
+
+/* Driver.js Dark Theme Overrides */
+.driver-popover.driverjs-theme {
+  background-color: #1a1a1a;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.driver-popover.driverjs-theme .driver-popover-title {
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.driver-popover.driverjs-theme .driver-popover-description {
+  color: #a3a3a3;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+.driver-popover.driverjs-theme button.driver-popover-next-btn,
+.driver-popover.driverjs-theme button.driver-popover-prev-btn {
+  background-color: #7C7CFF !important;
+  color: #000000 !important;
+  border: none !important;
+  text-shadow: none !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+}
+
+.driver-popover.driverjs-theme button.driver-popover-next-btn:hover,
+.driver-popover.driverjs-theme button.driver-popover-prev-btn:hover {
+  background-color: #A78BFA !important;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn {
+  color: #a3a3a3 !important;
+}
+
+.driver-popover.driverjs-theme .driver-popover-footer {
+  background-color: transparent !important;
+}

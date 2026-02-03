@@ -116,7 +116,10 @@ const TaskCard = ({ task, style }) => {
             <h3 className="font-bold text-t-primary text-lg tracking-tight leading-tight">{title}</h3>
         </div>
         <div className="flex flex-col items-end gap-1">
-            <span className="text-xs font-mono font-bold text-neon-glow bg-elevated border border-white/10 px-2 py-1 rounded">
+            <span 
+                data-tour="gravity-score"
+                className="text-xs font-mono font-bold text-neon-glow bg-elevated border border-white/10 px-2 py-1 rounded"
+            >
             {gravityScore.toFixed(1)} G
             </span>
         </div>
