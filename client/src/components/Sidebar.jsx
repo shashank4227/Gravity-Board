@@ -144,12 +144,7 @@ const Sidebar = () => {
                 </div>
             </div>
 
-             {/* Bottom Actions */}
-             <div className="p-3 border-t border-white/5 mt-4 space-y-1">
-                <button className="w-full flex items-center gap-3 px-2 py-1.5 text-t-secondary hover:bg-white/5 hover:text-t-primary rounded-lg transition-colors text-sm">
-                    <Plus size={16} /> Create Team Space
-                </button>
-             </div>
+
         </aside>
         </>
     );

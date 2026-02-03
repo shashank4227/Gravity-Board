@@ -30,7 +30,12 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 setTitle(editingTask.title || '');
                 setDescription(editingTask.description || '');
                 setEnergyLevel(editingTask.energyLevel || 'medium');
-                setDeadline(editingTask.deadline ? editingTask.deadline.substring(0, 16) : ''); // Format for datetime-local
+                // Convert UTC to local datetime-local format
+                const localDeadline = editingTask.deadline ? new Date(editingTask.deadline) : '';
+                const formattedDeadline = localDeadline 
+                    ? new Date(localDeadline.getTime() - (localDeadline.getTimezoneOffset() * 60000)).toISOString().slice(0, 16)
+                    : '';
+                setDeadline(formattedDeadline);
                 setContextTags(editingTask.contextTags ? editingTask.contextTags.join(', ') : '');
                 setRecurrence(editingTask.recurrence?.frequency || 'none');
                 setSection(editingTask.section || '');
@@ -71,7 +76,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 title,
                 description,
                 energyLevel,
-                deadline,
+                deadline: deadline || null,
                 contextTags: tags,
                 recurrence: { frequency: recurrence },
                 section: section || 'General',
@@ -110,11 +115,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
         }
     };
 
-    const energyOptions = [
-        { value: 'low', label: 'Low', color: 'bg-emerald-900/20 text-emerald-400 border-emerald-500/20' },
-        { value: 'medium', label: 'Medium', color: 'bg-status-warning/10 text-status-warning border-status-warning/20' },
-        { value: 'high', label: 'High', color: 'bg-status-error/10 text-status-error border-status-error/20' }
-    ];
+
 
     const typeOptions = [
         { value: 'general', label: 'General', icon: <AlignLeft size={16} /> },

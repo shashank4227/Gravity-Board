@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Zap, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil } from 'lucide-react';
+import { Clock, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil } from 'lucide-react';
 import classNames from 'classnames';
 import { executeTask, deleteTask } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext'; // Assuming context might be needed for refresh
@@ -22,7 +22,14 @@ const TaskCard = ({ task, style }) => {
       high: 'text-status-error'
   };
 
-  const formattedDeadline = deadline ? new Date(deadline).toLocaleDateString() : null;
+  const formattedDeadline = deadline 
+    ? new Date(deadline).toLocaleString([], { 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }) 
+    : null;
 
   const getTypeIcon = () => {
       switch(type) {
@@ -74,9 +81,7 @@ const TaskCard = ({ task, style }) => {
                 <AlertCircle size={10} strokeWidth={3} /> {priority}
              </span>
         )}
-        <span className={classNames("text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-semibold flex items-center gap-1.5", energyColors[energyLevel])}>
-          <Zap size={10} strokeWidth={3} /> {energyLevel}
-        </span>
+
         {formattedDeadline && (
             <span className="text-[10px] bg-elevated text-t-secondary px-2 py-0.5 rounded uppercase tracking-wider font-semibold flex items-center gap-1.5 border border-white/5">
                 <Clock size={10} strokeWidth={3} /> {formattedDeadline}
