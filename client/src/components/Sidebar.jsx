@@ -105,7 +105,13 @@ const Sidebar = () => {
                     <Plus size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div className="space-y-1">
-                    <button className="w-full flex items-center gap-3 px-2 py-1.5 text-t-secondary hover:bg-white/5 hover:text-t-primary rounded-lg transition-colors text-sm">
+                    <button 
+                        onClick={() => handleNavigation(() => setActiveView('favorites'))}
+                        className={classNames(
+                            "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm",
+                            activeView === 'favorites' ? "bg-white/5 text-t-primary" : "text-t-secondary hover:bg-white/5 hover:text-t-primary"
+                        )}
+                    >
                         <span className="text-neon-cyan text-lg leading-3">•</span> High Priority
                     </button>
                 </div>

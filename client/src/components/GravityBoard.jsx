@@ -56,6 +56,8 @@ const GravityBoard = () => {
         } else if (activeView === 'upcoming') {
             const today = new Date().toISOString().split('T')[0];
             data = data.filter(t => t.deadline && t.deadline > today);
+        } else if (activeView === 'favorites') {
+            data = data.filter(t => t.priority === 'high');
         }
         // 'project' view shows all (or default)
 
