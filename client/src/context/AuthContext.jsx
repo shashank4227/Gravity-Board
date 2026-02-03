@@ -29,6 +29,9 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
+            // Ensure we are in loading state while fetching
+            setLoading(true);
+
             try {
                 // We need to use full URL here because api.js handles the base URL logic 
                 // but we are using raw axios here for auth context to avoid circular deps if we imported from api.js
