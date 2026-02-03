@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil } from 'lucide-react';
+import { Clock, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil, ExternalLink } from 'lucide-react';
 import classNames from 'classnames';
 import { executeTask, deleteTask } from '../utils/api';
-import { useTaskContext } from '../context/TaskContext'; // Assuming context might be needed for refresh
+import { useTaskContext } from '../context/TaskContext'; 
 
 const TaskCard = ({ task, style }) => {
-  const { title, description, gravityScore, energyLevel, deadline, contextTags, type, priority, status } = task;
+  const { title, description, gravityScore, energyLevel, deadline, contextTags, type, priority, status, actionPayload } = task;
   const [isExecuting, setIsExecuting] = useState(false);
-  const { refreshTasks, openEditTask } = useTaskContext(); // Assuming this exists or similar
+  const { refreshTasks, openEditTask } = useTaskContext();
 
   const energyColors = {
     low: 'bg-emerald-900/20 text-emerald-400 border border-emerald-500/20',
@@ -40,6 +40,51 @@ const TaskCard = ({ task, style }) => {
       }
   };
 
+  const renderActionButtons = () => {
+      if (type === 'email' && actionPayload?.recipient) {
+          // Changed to specific Gmail Compose URL
+          const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(actionPayload.recipient)}&su=${encodeURIComponent(title)}&body=${encodeURIComponent(description || '')}`;
+          
+          return (
+              <a 
+                  href={gmailLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full mt-3 bg-white/5 hover:bg-white/10 border border-white/10 text-t-primary text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-colors group/btn"
+              >
+                  <Mail size={14} className="group-hover/btn:text-neon transition-colors" />
+                  Compose in Gmail
+                  <ExternalLink size={12} className="opacity-50" />
+              </a>
+          );
+      }
+
+      if (type === 'calendar' && deadline) {
+          // Format dates for Google Calendar (YYYYMMDDTHHMMSSZ)
+          // We need to ensure we are handling the timezone correctly - usually converting to UTC string and stripping non-digits works well for Z time
+          const dateObj = new Date(deadline);
+          const startStr = dateObj.toISOString().replace(/-|:|\.\d\d\d/g, "");
+          const endStr = new Date(dateObj.getTime() + 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, ""); // 1 hour default duration
+          
+          const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(description || '')}&dates=${startStr}/${endStr}`;
+          
+          return (
+              <a 
+                  href={calendarLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full mt-3 bg-white/5 hover:bg-white/10 border border-white/10 text-t-primary text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-2 transition-colors group/btn"
+              >
+                  <Calendar size={14} className="group-hover/btn:text-neon transition-colors" />
+                  Add to Google Calendar
+                  <ExternalLink size={12} className="opacity-50" />
+              </a>
+          );
+      }
+
+      return null;
+  };
+
   return (
     <motion.div
       style={style}
@@ -60,7 +105,14 @@ const TaskCard = ({ task, style }) => {
 
       <div className="flex justify-between items-start mb-3 pl-3">
         <div className="flex items-start gap-2">
-            <span className="mt-1 text-t-disabled">{getTypeIcon()}</span>
+            <span className={classNames("mt-1 p-1 rounded-md", 
+                type === 'email' ? "text-sky-400 bg-sky-400/10" : 
+                type === 'calendar' ? "text-purple-400 bg-purple-400/10" : 
+                type === 'reminder' ? "text-amber-400 bg-amber-400/10" :
+                "text-t-disabled"
+            )}>
+                {getTypeIcon()}
+            </span>
             <h3 className="font-bold text-t-primary text-lg tracking-tight leading-tight">{title}</h3>
         </div>
         <div className="flex flex-col items-end gap-1">
@@ -93,8 +145,20 @@ const TaskCard = ({ task, style }) => {
             </span>
         )}
       </div>
+
+      {/* Description Snippet */}
+      {description && (
+          <p className="text-sm text-t-secondary pl-3 mb-3 line-clamp-2">
+              {description}
+          </p>
+      )}
       
-      <div className="flex items-center justify-between pl-3 relative min-h-[24px]">
+      {/* Action Buttons */}
+      <div className="pl-3 mb-3">
+          {renderActionButtons()}
+      </div>
+
+      <div className="flex items-center justify-between pl-3 relative min-h-[24px] mt-auto">
           {/* Section Badge */}
           <div className="flex items-center">
             <span className="text-[10px] font-bold text-t-disabled uppercase tracking-widest flex items-center gap-1">
