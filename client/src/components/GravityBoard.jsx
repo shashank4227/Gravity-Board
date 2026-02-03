@@ -214,7 +214,7 @@ const GravityBoard = () => {
 
                             {/* Notification Panel */}
                             {isNotifOpen && (
-                                <div className="absolute right-0 top-full mt-2 w-80 bg-elevated border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[400px]">
+                                <div className="absolute right-0 top-full mt-2 w-[90vw] sm:w-80 bg-elevated border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[60vh] sm:max-h-[400px]">
                                     <div className="p-3 border-b border-white/5 flex justify-between items-center bg-surface">
                                         <h4 className="text-xs font-bold uppercase tracking-wider text-t-secondary">Notifications</h4>
                                         {unreadCount > 0 && (
@@ -255,10 +255,10 @@ const GravityBoard = () => {
                                                     {!notif.read && (
                                                         <button 
                                                             onClick={(e) => { e.stopPropagation(); markRead(notif.id); }}
-                                                            className="absolute right-2 top-2 p-1 text-t-disabled hover:text-neon opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            className="absolute right-2 top-2 p-3 sm:p-1 text-t-disabled hover:text-neon opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                                                             title="Mark as read"
                                                         >
-                                                            <Check size={12} />
+                                                            <Check size={16} className="sm:w-3 sm:h-3" />
                                                         </button>
                                                     )}
                                                 </div>
