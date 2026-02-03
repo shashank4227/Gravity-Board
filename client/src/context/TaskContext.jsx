@@ -102,7 +102,8 @@ export const TaskProvider = ({ children }) => {
             activeProject,
             setActiveProject,
             isMobileSidebarOpen,
-            toggleMobileSidebar,
+            toggleMobileSidebar: () => setIsMobileSidebarOpen(prev => !prev),
+            setIsMobileSidebarOpen, // Expose explicit setter
             notifications,
             unreadCount,
             markRead,

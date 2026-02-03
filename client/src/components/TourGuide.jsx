@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTaskContext } from "../context/TaskContext";
 
 const TourGuide = () => {
-  const { tasks, toggleMobileSidebar, isMobileSidebarOpen } = useTaskContext();
+  const { tasks, setIsMobileSidebarOpen } = useTaskContext();
   const [introCompleted, setIntroCompleted] = useState(
       !!localStorage.getItem("gravityBoard_intro_completed")
   );
@@ -39,13 +39,7 @@ const TourGuide = () => {
             },
             onHighlightStarted: () => {
                 if (window.innerWidth < 768) {
-                     // Check if not already open to toggle correctly
-                     const sidebar = document.querySelector('aside');
-                     // We use the context toggle, but since state isn't available inside this callback closure easily
-                     // we rely on the visual state or just force it. 
-                     // Since we can't easily access updated 'isMobileSidebarOpen' inside this closure due to stale state,
-                     // we'll trigger the toggle.
-                     toggleMobileSidebar();
+                     setIsMobileSidebarOpen(true); // Explicitly open
                 }
             }
           },
@@ -69,7 +63,7 @@ const TourGuide = () => {
             onHighlightStarted: () => {
                 // Close sidebar when moving to search
                 if (window.innerWidth < 768) {
-                    toggleMobileSidebar();
+                    setIsMobileSidebarOpen(false); // Explicitly close
                 }
             }
           },

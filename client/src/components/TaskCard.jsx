@@ -169,7 +169,7 @@ const TaskCard = ({ task, style }) => {
             </span>
           </div>
 
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bottom-0 flex gap-2">
+          <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity absolute right-0 bottom-0 flex gap-2">
                <button 
                 onClick={(e) => {
                     e.stopPropagation();
