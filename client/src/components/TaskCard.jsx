@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil, ExternalLink } from 'lucide-react';
+import { Clock, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil, ExternalLink, ArrowRight, ArrowLeft } from 'lucide-react';
 import classNames from 'classnames';
-import { executeTask, deleteTask } from '../utils/api';
+import { executeTask, deleteTask, updateTask } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext'; 
 
 const TaskCard = ({ task, style }) => {
@@ -170,6 +170,25 @@ const TaskCard = ({ task, style }) => {
           </div>
 
           <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity absolute right-0 bottom-0 flex gap-2">
+               {/* Quick Move Button */}
+               {(task.section === 'Planning' || task.section === 'In Progress' || !task.section || task.section === 'Inbox' || task.section === 'General') && (
+                   <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        let newSection = 'Planning';
+                        if (task.section === 'Planning') newSection = 'In Progress';
+                        else if (task.section === 'In Progress') newSection = 'Planning';
+                        
+                        updateTask(task._id, { section: newSection })
+                            .then(() => refreshTasks())
+                            .catch(err => console.error(err));
+                    }}
+                    className="text-xs bg-neon/10 text-neon px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-neon/20 transition-colors border border-neon/20"
+                    title={task.section === 'In Progress' ? "Move back to Planning" : "Move Forward"}
+                  >
+                      {task.section === 'In Progress' ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}
+                  </button>
+               )}
                <button 
                 onClick={(e) => {
                     e.stopPropagation();

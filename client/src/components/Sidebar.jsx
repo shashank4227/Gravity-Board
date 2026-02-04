@@ -77,15 +77,7 @@ const Sidebar = () => {
 
             {/* Quick Actions */}
             <div className="px-3 py-2 space-y-1 mt-2">
-                <button 
-                    onClick={() => handleNavigation(() => openCreateTask())}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 text-neon hover:bg-white/5 rounded-lg transition-colors font-semibold text-sm"
-                >
-                    <div className="bg-neon/20 p-1 rounded-full text-neon">
-                        <Plus size={16} />
-                    </div>
-                    Add task
-                </button>
+                {/* Add Task Removed */}
                 
                 <button 
                     onClick={() => handleNavigation(() => setActiveView('today'))}
