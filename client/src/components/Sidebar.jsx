@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { useAuth } from '../context/AuthContext';
-import { ChevronDown, Plus, Search, Calendar, CalendarDays, Hash, LogOut, User, X } from 'lucide-react';
+import { ChevronDown, Plus, Search, Calendar, CalendarDays, Hash, LogOut, User, X, CheckCircle } from 'lucide-react';
 import classNames from 'classnames';
 
 const Sidebar = () => {
@@ -90,14 +90,23 @@ const Sidebar = () => {
                     {counts?.today > 0 && <span className="ml-auto text-xs text-t-disabled">{counts.today}</span>}
                 </button>
                 <button 
-                     onClick={() => handleNavigation(() => setActiveView('upcoming'))}
-                     className={classNames(
+                    onClick={() => handleNavigation(() => setActiveView('upcoming'))}
+                    className={classNames(
                         "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm",
-                         activeView === 'upcoming' ? "bg-white/5 text-t-primary" : "text-t-secondary hover:bg-white/5 hover:text-t-primary"
+                        activeView === 'upcoming' ? "bg-white/5 text-t-primary" : "text-t-secondary hover:bg-white/5 hover:text-t-primary"
                     )}
                 >
                     <CalendarDays size={18} className="text-neon-glow"/> Upcoming
                     {counts?.upcoming > 0 && <span className="ml-auto text-xs text-t-disabled">{counts.upcoming}</span>}
+                </button>
+                <button 
+                    onClick={() => handleNavigation(() => setActiveView('completed'))}
+                    className={classNames(
+                        "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm",
+                        activeView === 'completed' ? "bg-white/5 text-t-primary" : "text-t-secondary hover:bg-white/5 hover:text-t-primary"
+                    )}
+                >
+                    <CheckCircle size={18} className="text-t-disabled"/> Completed
                 </button>
             </div>
 

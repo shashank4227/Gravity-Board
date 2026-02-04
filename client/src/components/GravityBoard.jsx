@@ -60,6 +60,9 @@ const GravityBoard = () => {
         } else if (activeView === 'favorites') {
             data = data.filter(t => t.priority === 'high');
         }
+        else if (activeView === 'completed') {
+            data = data.filter(t => t.section === 'Completed');
+        }
         // 'project' view shows all (or default)
 
         // Apply Custom Filters
@@ -90,8 +93,12 @@ const GravityBoard = () => {
         }, {});
 
         // Ensure default columns exist if you want fixed structure
-        if (!groups['Planning']) groups['Planning'] = [];
-        if (!groups['In Progress']) groups['In Progress'] = [];
+        if (activeView !== 'completed') {
+            if (!groups['Planning']) groups['Planning'] = [];
+            if (!groups['In Progress']) groups['In Progress'] = [];
+        } else {
+            if (!groups['Completed']) groups['Completed'] = [];
+        }
         
         setGroupedTasks(groups);
     }, [tasks, activeView, filterType, filterPriority, searchQuery]);
@@ -110,7 +117,7 @@ const GravityBoard = () => {
         handleTaskCreated();
     };
 
-    const sections = ['Planning', 'In Progress'];
+    const sections = activeView === 'completed' ? ['Completed'] : ['Planning', 'In Progress'];
 
     return (
         <div className="flex-1 min-h-screen bg-midnight text-t-primary pt-6 transition-all will-change-transform relative overflow-hidden">

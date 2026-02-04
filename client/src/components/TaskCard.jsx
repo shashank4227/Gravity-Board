@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil, ExternalLink, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Clock, MapPin, RefreshCw, Folder, Mail, Bell, Calendar, Play, Trash2, CheckCircle, AlertCircle, AlignLeft, Pencil, ExternalLink, ArrowRight, ArrowLeft, Check, RotateCcw } from 'lucide-react';
 import classNames from 'classnames';
 import { executeTask, deleteTask, updateTask } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext'; 
@@ -169,35 +169,85 @@ const TaskCard = ({ task, style }) => {
             </span>
           </div>
 
-          <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity absolute right-0 bottom-0 flex gap-2">
-               {/* Quick Move Button */}
-               {(task.section === 'Planning' || task.section === 'In Progress' || !task.section || task.section === 'Inbox' || task.section === 'General') && (
+           <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity absolute right-0 bottom-0 flex gap-1">
+               
+                {/* Planning -> In Progress */}
+               {(task.section === 'Planning' || task.section === 'Inbox' || task.section === 'General' || !task.section) && (
                    <button 
                     onClick={(e) => {
                         e.stopPropagation();
-                        let newSection = 'Planning';
-                        if (task.section === 'Planning') newSection = 'In Progress';
-                        else if (task.section === 'In Progress') newSection = 'Planning';
-                        
-                        updateTask(task._id, { section: newSection })
+                         updateTask(task._id, { section: 'In Progress' })
                             .then(() => refreshTasks())
                             .catch(err => console.error(err));
                     }}
                     className="text-xs bg-neon/10 text-neon px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-neon/20 transition-colors border border-neon/20"
-                    title={task.section === 'In Progress' ? "Move back to Planning" : "Move Forward"}
+                    title="Start / Move to In Progress"
                   >
-                      {task.section === 'In Progress' ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}
+                      <Play size={12} fill="currentColor" />
                   </button>
                )}
+
+               {/* In Progress -> Planning */}
+               {task.section === 'In Progress' && (
+                   <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        updateTask(task._id, { section: 'Planning' })
+                            .then(() => refreshTasks())
+                            .catch(err => console.error(err));
+                    }}
+                    className="text-xs bg-white/5 text-t-secondary px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-white/10 transition-colors border border-white/10"
+                    title="Move back to Planning"
+                  >
+                      <RotateCcw size={12} />
+                  </button>
+               )}
+               
+               {/* In Progress -> Completed */}
+               {task.section === 'In Progress' && (
+                   <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        updateTask(task._id, { section: 'Completed' })
+                            .then(() => refreshTasks())
+                            .catch(err => console.error(err));
+                    }}
+                    className="text-xs bg-neon/10 text-neon px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-neon/20 transition-colors border border-neon/20"
+                    title="Mark as Completed"
+                  >
+                      <CheckCircle size={12} />
+                  </button>
+               )}
+
+               {/* Completed -> In Progress */}
+               {task.section === 'Completed' && (
+                   <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                         updateTask(task._id, { section: 'In Progress' })
+                            .then(() => refreshTasks())
+                            .catch(err => console.error(err));
+                    }}
+                    className="text-xs bg-white/5 text-t-secondary px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-white/10 transition-colors border border-white/10"
+                    title="Move back to In Progress"
+                  >
+                      <RotateCcw size={12} />
+                  </button>
+               )}
+               
+               {/* Edit */}
                <button 
                 onClick={(e) => {
                     e.stopPropagation();
                     openEditTask(task);
                 }}
                 className="text-xs bg-status-warning/10 text-status-warning px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-status-warning/20 transition-colors border border-status-warning/20"
+                title="Edit"
               >
                   <Pencil size={12} />
               </button>
+
+               {/* Delete */}
                <button 
                 onClick={(e) => {
                     e.stopPropagation();
@@ -206,6 +256,7 @@ const TaskCard = ({ task, style }) => {
                     }
                 }}
                 className="text-xs bg-status-error/10 text-status-error px-2 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-status-error/20 transition-colors border border-status-error/20"
+                title="Delete"
               >
                   <Trash2 size={12} />
               </button>
