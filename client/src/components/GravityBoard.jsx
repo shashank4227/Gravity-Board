@@ -96,6 +96,7 @@ const GravityBoard = () => {
         if (activeView !== 'completed') {
             if (!groups['Planning']) groups['Planning'] = [];
             if (!groups['In Progress']) groups['In Progress'] = [];
+            if (!groups['Completed']) groups['Completed'] = [];
         } else {
             if (!groups['Completed']) groups['Completed'] = [];
         }
@@ -117,7 +118,7 @@ const GravityBoard = () => {
         handleTaskCreated();
     };
 
-    const sections = activeView === 'completed' ? ['Completed'] : ['Planning', 'In Progress'];
+    const sections = activeView === 'completed' ? ['Completed'] : ['Planning', 'In Progress', 'Completed'];
 
     return (
         <div className="flex-1 min-h-screen bg-midnight text-t-primary pt-6 transition-all will-change-transform relative overflow-hidden">
@@ -357,15 +358,7 @@ const GravityBoard = () => {
                     );
                 })}
                 
-                {/* Add Section Column */}
-                <div className="min-w-[300px] pt-2">
-                    <button 
-                        onClick={() => openCreateTask()}
-                        className="flex items-center gap-2 text-t-disabled font-medium hover:text-t-primary transition-colors text-sm hover:translate-x-1 duration-200"
-                    >
-                        <Plus size={16} /> Add section
-                    </button>
-                </div>
+                
             </div>
         </div>
     );
