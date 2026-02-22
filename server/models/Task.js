@@ -19,11 +19,7 @@ const TaskSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    energyLevel: {
-        type: String,
-        enum: ['low', 'medium', 'high'],
-        default: 'medium'
-    },
+
     urgency: {
         type: Number, // 0-10
         default: 5

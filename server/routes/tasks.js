@@ -12,7 +12,6 @@ router.get('/', auth, async (req, res) => {
         // Recalculate gravity for all tasks based on current time (and potential user context from query)
         // For now, assuming context is passed via query params or defaults
         const userContext = {
-            energyLevel: req.query.energyLevel || 'medium',
             location: req.query.location
         };
 
@@ -35,7 +34,7 @@ router.post('/', auth, async (req, res) => {
     const task = new Task({
         title: req.body.title,
         description: req.body.description,
-        energyLevel: req.body.energyLevel,
+
         urgency: req.body.urgency,
         priority: req.body.priority, // Added
         type: req.body.type,         // Added
@@ -66,7 +65,7 @@ router.patch('/:id', auth, async (req, res) => {
         if (!task) return res.status(404).json({ message: 'Task not found' });
 
         // Update fields if they exist in body
-        const updates = ['title', 'description', 'status', 'priority', 'type', 'actionPayload', 'deadline', 'section', 'energyLevel', 'urgency', 'effort'];
+        const updates = ['title', 'description', 'status', 'priority', 'type', 'actionPayload', 'deadline', 'section', 'urgency', 'effort'];
         
         updates.forEach(field => {
             if (req.body[field] !== undefined) {

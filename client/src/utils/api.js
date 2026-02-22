@@ -72,9 +72,9 @@ export const executeTask = async (id) => {
     }
 };
 
-export const startFocusSession = async (taskId, userEnergy) => {
+export const startFocusSession = async (taskId) => {
     try {
-        const response = await axios.post(`${API_URL}/focus/start`, { taskId, userEnergy });
+        const response = await axios.post(`${API_URL}/focus/start`, { taskId });
         return response.data;
     } catch (error) {
         console.error("Error starting focus session:", error);

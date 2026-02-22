@@ -9,17 +9,16 @@ const { calculateOptimalDuration } = require('../utils/focusLogic');
 // Response: { sessionId, durationMinutes, taskTitle }
 router.post('/start', async (req, res) => {
     try {
-        const { taskId, userEnergy } = req.body;
+        const { taskId } = req.body;
         
         const task = await Task.findById(taskId);
         if (!task) return res.status(404).json({ message: 'Task not found' });
 
-        const duration = calculateOptimalDuration(task, userEnergy);
+        const duration = calculateOptimalDuration(task);
 
         const session = new FocusSession({
             taskId,
             durationMinutes: duration,
-            energyLevelOfUser: userEnergy,
             status: 'started' // Custom status for active
         });
 

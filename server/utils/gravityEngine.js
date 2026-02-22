@@ -13,15 +13,11 @@ const calculateGravity = (task, userContext = {}) => {
     const deadline = task.deadline ? new Date(task.deadline) : null;
     
     // 1. Base Gravity from User Inputs
-    // Maps energy level to numeric modifier
-    const energyMap = { 'low': 0.8, 'medium': 1.0, 'high': 1.2 }; 
-    const taskEnergyMod = energyMap[task.energyLevel] || 1.0;
-
     // Priority Modifier
     const priorityMap = { 'low': 0.8, 'medium': 1.0, 'high': 1.5 };
     const priorityMod = priorityMap[task.priority] || 1.0;
     
-    let gravity = (task.urgency || 5) * (task.effort || 5) * taskEnergyMod * priorityMod;
+    let gravity = (task.urgency || 5) * (task.effort || 5) * priorityMod;
 
     // 2. Deadline Pressure ( Exponential increase as deadline approaches )
     if (deadline) {
@@ -36,18 +32,7 @@ const calculateGravity = (task, userContext = {}) => {
         }
     }
 
-    // 3. User Context Matching
-    // If user's current energy matches task's needed energy, boost gravity (pull it closer)
-    if (userContext.energyLevel && userContext.energyLevel === task.energyLevel) {
-        gravity *= 1.2;
-    }
-    
-    // Low energy context should prefer Low energy tasks
-    if (userContext.energyLevel === 'low' && task.energyLevel === 'high') {
-        gravity *= 0.5; // Push away high energy tasks
-    }
-
-    // 4. Context Tags (Location, Device)
+    // 3. Context Tags (Location, Device)
     if (userContext.location && task.contextTags && task.contextTags.length > 0) {
         // If task has tags but none match current location, reduce gravity
         // Logic: specific context tasks shouldn't appear in wrong context

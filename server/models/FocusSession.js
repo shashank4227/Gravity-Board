@@ -24,10 +24,7 @@ const FocusSessionSchema = new mongoose.Schema({
         enum: ['completed', 'aborted', 'paused'],
         default: 'paused' // Initial state until completed/aborted
     },
-    energyLevelOfUser: {
-        type: String,
-        enum: ['low', 'medium', 'high']
-    },
+
     distractionCount: {
         type: Number,
         default: 0

@@ -12,7 +12,6 @@ const CreateTaskForm = ({ onTaskCreated }) => {
     // Form State
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [energyLevel, setEnergyLevel] = useState('medium');
     const [deadline, setDeadline] = useState('');
     const [contextTags, setContextTags] = useState('');
     const [recurrence, setRecurrence] = useState('none');
@@ -29,7 +28,6 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 // Populate form with existing task data
                 setTitle(editingTask.title || '');
                 setDescription(editingTask.description || '');
-                setEnergyLevel(editingTask.energyLevel || 'medium');
                 // Convert UTC to local datetime-local format
                 const localDeadline = editingTask.deadline ? new Date(editingTask.deadline) : '';
                 const formattedDeadline = localDeadline 
@@ -46,7 +44,6 @@ const CreateTaskForm = ({ onTaskCreated }) => {
                 // Reset/Default for new task
                 setTitle('');
                 setDescription('');
-                setEnergyLevel('medium');
                 setDeadline('');
                 setContextTags('');
                 setRecurrence('none');
@@ -75,7 +72,6 @@ const CreateTaskForm = ({ onTaskCreated }) => {
             const taskData = {
                 title,
                 description,
-                energyLevel,
                 deadline: deadline ? new Date(deadline).toISOString() : null,
                 contextTags: tags,
                 recurrence: { frequency: recurrence },
@@ -94,7 +90,6 @@ const CreateTaskForm = ({ onTaskCreated }) => {
             // Reset and close
             setTitle('');
             setDescription('');
-            setEnergyLevel('medium');
             setDeadline('');
             setContextTags('');
             setRecurrence('none');

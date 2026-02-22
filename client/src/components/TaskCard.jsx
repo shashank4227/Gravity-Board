@@ -6,15 +6,10 @@ import { executeTask, deleteTask, updateTask } from '../utils/api';
 import { useTaskContext } from '../context/TaskContext'; 
 
 const TaskCard = ({ task, style }) => {
-  const { title, description, gravityScore, energyLevel, deadline, contextTags, type, priority, status, actionPayload } = task;
+  const { title, description, gravityScore, deadline, contextTags, type, priority, status, actionPayload } = task;
   const [isExecuting, setIsExecuting] = useState(false);
   const { refreshTasks, openEditTask } = useTaskContext();
 
-  const energyColors = {
-    low: 'bg-emerald-900/20 text-emerald-400 border border-emerald-500/20',
-    medium: 'bg-status-warning/10 text-status-warning border border-status-warning/20',
-    high: 'bg-status-error/10 text-status-error border border-status-error/20',
-  };
 
   const priorityColors = {
       low: 'text-emerald-400',

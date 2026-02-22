@@ -109,7 +109,7 @@ const GravityBoard = () => {
     };
 
     const handleEnterFocus = async (task) => {
-        const session = await startFocusSession(task._id, task.energyLevel || 'medium');
+        const session = await startFocusSession(task._id);
         setActiveFocusSession(session);
     };
 

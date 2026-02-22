@@ -6,30 +6,13 @@
  * 3. Time of Day (Circadian Rhythm - Simplified)
  */
 
-const calculateOptimalDuration = (task, userEnergy) => {
+const calculateOptimalDuration = (task) => {
     let baseDuration = 25; // Default Pomodoro
 
-    // 1. Adjust by Energy Level
-    switch (userEnergy) {
-        case 'low':
-            baseDuration = 15; // Micro-focus for low energy
-            break;
-        case 'medium':
-            baseDuration = 25;
-            break;
-        case 'high':
-            baseDuration = 45; // Deep work for high energy
-            break;
-        default:
-            baseDuration = 25;
-    }
-
-    // 2. Adjust by Task Effort/Gravity (if available)
+    // 1. Adjust by Task Effort/Gravity (if available)
     if (task.effort) {
-        if (task.effort > 7 && userEnergy === 'high') {
-            baseDuration += 10; // Extend deep work for hard tasks if energy is high
-        } else if (task.effort > 7 && userEnergy === 'low') {
-            baseDuration -= 5; // Shorten sessions for hard tasks if energy is low (avoid burnout)
+        if (task.effort > 7) {
+            baseDuration += 10; // Extend deep work for hard tasks
         }
     }
 
