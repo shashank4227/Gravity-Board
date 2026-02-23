@@ -6,7 +6,6 @@ GravityBoard is a modern, task management application designed to help you prior
 
 *   **Gravity Scoring:** Tasks are weighted by priority and deadline pressure to calculate a "Gravity Score", helping you focus on what matters.
 *   **Kanban Workflow:** Visualize your tasks in columns (Inbox, Planning, In Progress, etc.) for efficient tracking.
-*   **Focus Mode:** Enter a dedicated session for a specific task to eliminate distractions.
 *   **Smart Notifications:**
     *   **Deadline Alerts:** Get notified 1 hour and 10 minutes before a task is due.
     *   **Notification Center:** A built-in inbox to review past alerts and mark them as read.
