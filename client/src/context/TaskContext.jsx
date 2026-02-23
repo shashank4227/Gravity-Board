@@ -21,7 +21,7 @@ export const TaskProvider = ({ children }) => {
 
     // Navigation/View State
     const [activeView, setActiveView] = useState('project'); // 'inbox', 'today', 'upcoming', 'project'
-    const [activeProject, setActiveProject] = useState('GravityBoard'); // Default project or 'General'
+    const [activeProject, setActiveProject] = useState('all'); // Default to all projects
 
     // Notification Logic
     const { notifications, unreadCount, markRead, markAllRead, requestPermission } = useTaskNotifications(tasks);

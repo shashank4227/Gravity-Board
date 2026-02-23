@@ -12,6 +12,7 @@ const GravityBoard = () => {
     const { 
         openCreateTask, 
         activeView, 
+        activeProject,
         tasks, 
         refreshTasks, 
         toggleMobileSidebar,
@@ -93,7 +94,9 @@ const GravityBoard = () => {
         }, {});
 
         // Ensure default columns exist if you want fixed structure
-        if (activeView !== 'completed') {
+        if (activeView === 'project' && activeProject && activeProject !== 'all') {
+            if (!groups[activeProject]) groups[activeProject] = [];
+        } else if (activeView !== 'completed') {
             if (!groups['Planning']) groups['Planning'] = [];
             if (!groups['In Progress']) groups['In Progress'] = [];
             if (!groups['Completed']) groups['Completed'] = [];
@@ -102,7 +105,7 @@ const GravityBoard = () => {
         }
         
         setGroupedTasks(groups);
-    }, [tasks, activeView, filterType, filterPriority, searchQuery]);
+    }, [tasks, activeView, activeProject, filterType, filterPriority, searchQuery]);
 
     const handleTaskCreated = () => {
         refreshTasks();
@@ -118,7 +121,14 @@ const GravityBoard = () => {
         handleTaskCreated();
     };
 
-    const sections = activeView === 'completed' ? ['Completed'] : ['Planning', 'In Progress', 'Completed'];
+    let currentSections = ['Planning', 'In Progress', 'Completed'];
+    if (activeView === 'completed') {
+        currentSections = ['Completed'];
+    } else if (activeView === 'project' && activeProject && activeProject !== 'all') {
+        currentSections = [activeProject];
+    }
+
+    const sections = currentSections;
 
     return (
         <div className="flex-1 min-h-screen bg-midnight text-t-primary pt-6 transition-all will-change-transform relative overflow-hidden">

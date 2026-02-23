@@ -9,6 +9,8 @@ const Sidebar = () => {
         openCreateTask, 
         setActiveView, 
         activeView, 
+        activeProject,
+        setActiveProject,
         counts, 
         projects, 
         isMobileSidebarOpen, 
@@ -139,23 +141,24 @@ const Sidebar = () => {
                 </div>
                 <div className="space-y-1">
                      <button 
-                        onClick={() => handleNavigation(() => setActiveView('project'))}
+                        onClick={() => handleNavigation(() => { setActiveView('project'); setActiveProject('all'); })}
                         className={classNames(
                             "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm font-medium",
-                            activeView === 'project' ? 'bg-white/10 text-t-primary' : 'text-t-secondary hover:bg-white/5 hover:text-t-primary'
+                            activeView === 'project' && activeProject === 'all' ? 'bg-white/10 text-t-primary' : 'text-t-secondary hover:bg-white/5 hover:text-t-primary'
                         )}
                     >
                         <Hash size={16} /> All Projects
                         
                     </button>
                     
-                    {/* Dynamic Projects List */}
                     {projects && projects.map(proj => (
                         <button 
                              key={proj}
-                             // FUTURE: We could set filters to just this project
-                             // onClick={() => setActiveProject(proj)} 
-                             className="w-full flex items-center gap-3 px-2 py-1.5 text-t-secondary hover:bg-white/5 hover:text-t-primary rounded-lg transition-colors text-sm"
+                             onClick={() => handleNavigation(() => { setActiveView('project'); setActiveProject(proj); })} 
+                             className={classNames(
+                                 "w-full flex items-center gap-3 px-2 py-1.5 rounded-lg transition-colors text-sm",
+                                 activeView === 'project' && activeProject === proj ? 'bg-white/10 text-t-primary' : 'text-t-secondary hover:bg-white/5 hover:text-t-primary'
+                             )}
                         >
                             <Hash size={16} /> {proj}
                         </button>
