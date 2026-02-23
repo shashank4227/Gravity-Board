@@ -123,7 +123,7 @@ const TourGuide = () => {
                 element: '[data-tour="gravity-score"]', 
                 popover: { 
                   title: 'Gravity Score Detected! 🌌', 
-                  description: 'This **Gravity Score** determines order. High Priority, Urgent Deadlines, and Energy Levels increase gravity. Heavier tasks **rise to the top**, ensuring you always focus on what effectively matters first.', 
+                  description: 'This **Gravity Score** determines order. High Priority and Urgent Deadlines increase gravity. Heavier tasks **rise to the top**, ensuring you always focus on what effectively matters first.', 
                   side: "left", 
                   align: 'center' 
                 } 

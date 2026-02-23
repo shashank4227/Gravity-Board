@@ -9,14 +9,8 @@ router.get('/', auth, async (req, res) => {
     try {
         const tasks = await Task.find({ user: req.user.id });
         
-        // Recalculate gravity for all tasks based on current time (and potential user context from query)
-        // For now, assuming context is passed via query params or defaults
-        const userContext = {
-            location: req.query.location
-        };
-
         const tasksWithGravity = tasks.map(task => {
-            const gravity = calculateGravity(task.toObject(), userContext);
+            const gravity = calculateGravity(task.toObject());
             return { ...task.toObject(), gravityScore: gravity };
         });
 
@@ -35,11 +29,9 @@ router.post('/', auth, async (req, res) => {
         title: req.body.title,
         description: req.body.description,
 
-        urgency: req.body.urgency,
         priority: req.body.priority, // Added
         type: req.body.type,         // Added
         actionPayload: req.body.actionPayload, // Added
-        effort: req.body.effort,
         deadline: req.body.deadline,
         contextTags: req.body.contextTags,
         recurrence: req.body.recurrence,
@@ -65,7 +57,7 @@ router.patch('/:id', auth, async (req, res) => {
         if (!task) return res.status(404).json({ message: 'Task not found' });
 
         // Update fields if they exist in body
-        const updates = ['title', 'description', 'status', 'priority', 'type', 'actionPayload', 'deadline', 'section', 'urgency', 'effort'];
+        const updates = ['title', 'description', 'status', 'priority', 'type', 'actionPayload', 'deadline', 'section'];
         
         updates.forEach(field => {
             if (req.body[field] !== undefined) {
@@ -74,7 +66,7 @@ router.patch('/:id', auth, async (req, res) => {
         });
 
         // Recalculate gravity if metrics changed
-        if (req.body.urgency || req.body.effort || req.body.priority) {
+        if (req.body.priority || req.body.deadline) {
              task.gravityScore = calculateGravity(task.toObject()); 
         }
 

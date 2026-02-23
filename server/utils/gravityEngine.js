@@ -8,7 +8,7 @@
  * 4. Staleness (Time since creation/interaction)
  */
 
-const calculateGravity = (task, userContext = {}) => {
+const calculateGravity = (task) => {
     const NOW = new Date();
     const deadline = task.deadline ? new Date(task.deadline) : null;
     
@@ -17,7 +17,7 @@ const calculateGravity = (task, userContext = {}) => {
     const priorityMap = { 'low': 0.8, 'medium': 1.0, 'high': 1.5 };
     const priorityMod = priorityMap[task.priority] || 1.0;
     
-    let gravity = (task.urgency || 5) * (task.effort || 5) * priorityMod;
+    let gravity = priorityMod; 
 
     // 2. Deadline Pressure ( Exponential increase as deadline approaches )
     if (deadline) {
@@ -32,12 +32,7 @@ const calculateGravity = (task, userContext = {}) => {
         }
     }
 
-    // 3. Context Tags (Location, Device)
-    if (userContext.location && task.contextTags && task.contextTags.length > 0) {
-        // If task has tags but none match current location, reduce gravity
-        // Logic: specific context tasks shouldn't appear in wrong context
-        // This requires 'location' tags to be identifiable (e.g., @home, @work)
-    }
+
 
     return Math.round(gravity * 10) / 10;
 };

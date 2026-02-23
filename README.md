@@ -1,10 +1,10 @@
 # GravityBoard - Advanced Task Management System
 
-GravityBoard is a modern, physics-inspired task management application designed to help you prioritize and execute tasks based on their "Gravity" (importance, urgency, and effort). It features a sleek, dark-themed UI, Kanban-style organization, and focus tools.
+GravityBoard is a modern, task management application designed to help you prioritize and execute tasks based on their "Gravity" (importance, and deadline pressure). It features a sleek, dark-themed UI, Kanban-style organization, and focus tools.
 
 ## 🚀 Features
 
-*   **Gravity Scoring:** Tasks are weighted by urgency, effort, and priority to calculate a "Gravity Score", helping you focus on what matters.
+*   **Gravity Scoring:** Tasks are weighted by priority and deadline pressure to calculate a "Gravity Score", helping you focus on what matters.
 *   **Kanban Workflow:** Visualize your tasks in columns (Inbox, Planning, In Progress, etc.) for efficient tracking.
 *   **Focus Mode:** Enter a dedicated session for a specific task to eliminate distractions.
 *   **Smart Notifications:**
@@ -68,9 +68,8 @@ The application should now be running at `http://localhost:5173`.
 
 ## 🧠 Core Concepts
 
-*   **Gravity:** A calculated metric derived from a task's Priority, Urgency, and Energy Level. High gravity tasks pull your attention first.
+*   **Gravity:** A calculated metric derived from a task's Priority and its Deadline proximity. High gravity tasks pull your attention first.
 *   **Vectors:** Custom project sectors or areas of life (e.g., Work, Personal, Health).
-*   **Energy Level:** Define how much mental/physical energy a task requires (Low, Medium, High).
 
 ## 📄 License
 This project is open-source and available under the MIT License.

@@ -20,15 +20,7 @@ const TaskSchema = new mongoose.Schema({
         default: 0
     },
 
-    urgency: {
-        type: Number, // 0-10
-        default: 5
-    },
-    effort: {
-        type: Number, // 0-10
-        default: 5
-    },
-    
+
     // Context
     contextTags: [{
         type: String // e.g., 'home', 'work', 'mobile', 'desktop'
@@ -87,9 +79,7 @@ const TaskSchema = new mongoose.Schema({
 
 // Method to recalculate gravity (simplified version for now)
 TaskSchema.methods.calculateGravity = function() {
-    // Basic formula: (Urgency * 2) + Effort
-    // This will be expanded later
-    this.gravityScore = (this.urgency * 2) + this.effort;
+    this.gravityScore = 1; // Base score, simplified version for now
     return this.gravityScore;
 };
 
